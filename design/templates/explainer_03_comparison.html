@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1080px; height: 1080px;
+    font-family: 'Pretendard', -apple-system, sans-serif;
+    background: #FAFAFA;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .card {
+    width: 1080px; height: 1080px;
+    background: #FFFFFF;
+    border: 1px solid #E8E8E8;
+    padding: 80px;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .header {
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .section-label {
+    color: #999; font-size: 24px; letter-spacing: 2px; font-weight: 500;
+  }
+  .page-num {
+    color: #999; font-size: 22px;
+  }
+  .headline {
+    color: #111; font-size: 46px; font-weight: 500;
+    margin-bottom: 40px; letter-spacing: -0.02em;
+  }
+  .box {
+    border-radius: 20px; padding: 36px 40px; margin-bottom: 22px;
+  }
+  .box-before { background: #FAFAFA; }
+  .box-after { background: #F0F7F0; }
+  .box-label {
+    font-size: 22px; font-weight: 500; letter-spacing: 2px;
+    margin-bottom: 18px;
+  }
+  .label-before { color: #C44536; }
+  .label-after { color: #2D7A3E; }
+  .chain {
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    font-size: 26px;
+  }
+  .chip {
+    background: white; border: 1px solid #E0E0E0;
+    padding: 10px 18px; border-radius: 8px; color: #555;
+  }
+  .chip-after { border-color: #C8E0C8; color: #2D7A3E; font-weight: 500; }
+  .chip-highlight {
+    background: #2D7A3E; color: white; border: none; font-weight: 500;
+  }
+  .arrow { color: #C44536; font-size: 24px; }
+  .arrow-after { color: #2D7A3E; }
+  .box-note {
+    font-size: 22px; margin-top: 18px;
+  }
+  .note-before { color: #999; }
+  .note-after { color: #2D7A3E; }
+  .footer { color: #999; font-size: 22px; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+      <div class="section-label">{{ section_label }}</div>
+      <div class="page-num">{{ "%02d" | format(page_current) }} / {{ "%02d" | format(page_total) }}</div>
+    </div>
+    <div>
+      <div class="headline">{{ headline }}</div>
+      <div class="box box-before">
+        <div class="box-label label-before">{{ before_label }}</div>
+        <div class="chain">
+          {% for item in before_items %}
+            <span class="chip">{{ item }}</span>
+            {% if not loop.last %}<span class="arrow">↔</span>{% endif %}
+          {% endfor %}
+        </div>
+        <div class="box-note note-before">{{ before_note }}</div>
+      </div>
+      <div class="box box-after">
+        <div class="box-label label-after">{{ after_label }}</div>
+        <div class="chain">
+          {% for item in after_chain %}
+            {% if loop.index == 2 %}
+              <span class="chip chip-highlight">{{ item }}</span>
+            {% elif loop.first %}
+              <span class="chip chip-after">{{ item }}</span>
+            {% else %}
+              <span class="chip">{{ item }}</span>
+            {% endif %}
+            {% if not loop.last %}<span class="arrow arrow-after">→</span>{% endif %}
+          {% endfor %}
+        </div>
+        <div class="box-note note-after">{{ after_note }}</div>
+      </div>
+    </div>
+    <div class="footer">@{{ handle }}</div>
+  </div>
+</body>
+</html>

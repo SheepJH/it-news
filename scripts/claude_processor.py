@@ -1,144 +1,139 @@
-import anthropic
+"""
+뉴스 1개 → explainer 6페이지 JSON 생성
+"""
 import json
-import re
+import os
+import anthropic
 
-client = anthropic.Anthropic()
+HANDLE = "it.daily"
 
-SYSTEM_PROMPT = """당신은 IT 뉴스를 한국 개발자/기술인을 위한 인스타그램 카드뉴스로 만드는 전문가입니다.
-각 슬라이드는 독립적으로 읽혀야 하며, 구체적 수치와 사실에 기반해야 합니다.
-반드시 유효한 JSON만 반환하세요. 마크다운 코드블록 금지."""
+SYSTEM_PROMPT = """당신은 IT/테크 뉴스를 한국어 인스타그램 카드뉴스로 변환하는 전문가입니다.
+주어진 뉴스 기사를 분석해 6페이지짜리 explainer 카드뉴스 JSON을 생성하세요.
 
-CLASSIFY_PROMPT = """다음 IT 뉴스 제목들을 분석하여 카드뉴스용 JSON 배열로 반환하세요.
+반환 형식은 반드시 아래 JSON 구조를 정확히 따르고, 설명 텍스트 없이 JSON만 출력하세요.
 
-뉴스 목록:
-{stories}
+글자 수 제한 (반드시 준수):
+- cover question: 최대 3줄, 줄당 7자 이하, \\n으로 줄바꿈
+- definition headline_before_highlight + headline_highlight 합산: 각 줄 최대 10자
+- definition body_text: 최대 3줄, 줄당 15자 이하
+- comparison before_items: 각 항목 10자 이하, 최대 4개
+- comparison after_chain: 각 항목 10자 이하, 최대 3개
+- process steps.title: 12자 이하
+- process steps.desc: 20자 이하
+- example items.title: 15자 이하
+- example items.desc: 20자 이하
+- conclusion headline_parts: 각 part.text 8자 이하, 최대 4개
+- 이모지 금지
+- 원문 문장 복붙 금지, 반드시 재작성
 
-각 뉴스마다 아래 형식으로 반환하세요:
-{{
-  "index": 0,
-  "type": "standard|versus|data|timeline|explainer",
-  "category": "AI/ML|보안|개발|비즈니스|기타",
-  "title_ko": "강렬한 한국어 제목. 20자 이내. 숫자나 강한 동사 우선.",
-  "subtitle_ko": "핵심 수치 또는 임팩트 있는 한 줄. 없으면 null.",
-  "points": [
-    "첫 번째 핵심 사실. 이 슬라이드 하나에 집중할 독립적 내용. 구체적 수치·사실 반드시 포함. 완결된 2문장.",
-    "두 번째 핵심 사실. 첫 번째와 다른 각도. 독립적으로 읽혀야 함. 구체적 수치 포함. 2문장.",
-    "세 번째 핵심 사실. 맥락·배경·영향 중심. 독립적으로 읽혀야 함. 2문장."
-  ],
-  "importance": "왜 지금 이게 중요한가. 개발자/IT인 관점. 임팩트 있게. 2-3문장.",
-  "takeaway": "독자가 지금 당장 알거나 해야 할 것. 행동 지향적. 구체적. 1-2문장.",
-  "versus": null,
-  "timeline": null,
-  "stats": null
-}}
+JSON 구조:
+{
+  "genre": "explainer",
+  "handle": "it.daily",
+  "pages": [
+    {
+      "template": "explainer_01_cover.html",
+      "section_label": "00 · 커버",
+      "page_current": 1,
+      "page_total": 6,
+      "series_meta": "IT DAILY",
+      "question": "줄1\\n줄2\\n줄3",
+      "subtitle": "부제목\\n두번째줄"
+    },
+    {
+      "template": "explainer_02_definition.html",
+      "section_label": "01 · 정의",
+      "page_current": 2,
+      "page_total": 6,
+      "label_top": "ONE-LINER",
+      "headline_before_highlight": "앞부분\\n",
+      "headline_highlight": "핵심단어",
+      "body_text": "설명 첫줄\\n두번째줄\\n세번째줄"
+    },
+    {
+      "template": "explainer_03_comparison.html",
+      "section_label": "02 · 왜 필요해?",
+      "page_current": 3,
+      "page_total": 6,
+      "headline": "비교 헤드라인",
+      "before_label": "BEFORE",
+      "before_items": ["항목1", "항목2", "항목3"],
+      "before_note": "기존 문제점",
+      "after_label": "AFTER",
+      "after_chain": ["항목1", "핵심", "결과"],
+      "after_note": "개선된 점"
+    },
+    {
+      "template": "explainer_04_process.html",
+      "section_label": "03 · 작동 원리",
+      "page_current": 4,
+      "page_total": 6,
+      "headline": "3단계로 이해하기",
+      "steps": [
+        {"title": "단계 제목1", "desc": "단계 설명1"},
+        {"title": "단계 제목2", "desc": "단계 설명2"},
+        {"title": "단계 제목3", "desc": "단계 설명3"}
+      ]
+    },
+    {
+      "template": "explainer_05_example.html",
+      "section_label": "04 · 실제 예시",
+      "page_current": 5,
+      "page_total": 6,
+      "headline": "이미 쓰고 있는 곳",
+      "items": [
+        {"title": "사례 제목1", "desc": "사례 설명1", "tag": "LIVE"},
+        {"title": "사례 제목2", "desc": "사례 설명2", "tag": "NEW"},
+        {"title": "사례 제목3", "desc": "사례 설명3", "tag": "LIVE"}
+      ]
+    },
+    {
+      "template": "explainer_06_conclusion.html",
+      "section_label": "05 · 한 줄 요약",
+      "page_current": 6,
+      "page_total": 6,
+      "label_top": "REMEMBER THIS",
+      "headline_parts": [
+        {"text": "줄1", "highlight": false},
+        {"text": "줄2", "highlight": true},
+        {"text": "줄3", "highlight": false},
+        {"text": "줄4", "highlight": false}
+      ],
+      "body_text": "핵심 메시지\\n두번째줄",
+      "next_episode": "다음 편: 관련 주제"
+    }
+  ]
+}"""
 
-타입 선택 기준:
-- versus: A vs B 명시적 비교 (두 기술·제품·회사)
-- data: 수치·통계·순위 중심 뉴스
-- timeline: 사건 경과·역사적 흐름
-- explainer: 개념·기술 설명 ("what is", "how it works")
-- standard: 그 외
 
-versus 타입이면 versus 필드 채우기:
-"versus": {{
-  "a": {{
-    "name": "A 이름",
-    "highlight": "A의 핵심 특징. 구체적 수치 포함. 독립 슬라이드용 2-3문장.",
-    "pros": ["장점1 (수치 포함)", "장점2"],
-    "cons": ["단점1"],
-    "spec": "가격·성능 핵심 수치 한 줄"
-  }},
-  "b": {{
-    "name": "B 이름",
-    "highlight": "B의 핵심 특징. 구체적 수치 포함. 독립 슬라이드용 2-3문장.",
-    "pros": ["장점1 (수치 포함)", "장점2"],
-    "cons": ["단점1"],
-    "spec": "가격·성능 핵심 수치 한 줄"
-  }},
-  "verdict": "어떤 상황에 무엇이 더 나은지. 구체적으로. 2문장."
-}}
+def generate_explainer_json(story: dict) -> dict:
+    """뉴스 1개 → explainer 6페이지 JSON 생성"""
+    client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
 
-timeline 타입이면 timeline 필드 채우기 (날짜순, 최신이 마지막):
-"timeline": [{{"date": "날짜", "event": "구체적 사건 설명"}}]
+    user_prompt = f"""다음 IT 뉴스를 6페이지 explainer 카드뉴스로 변환하세요.
 
-data 타입이면 stats 필드 채우기 (가장 임팩트 있는 수치 3개):
-"stats": [{{"label": "무엇을 나타내는 수치인지", "value": "수치", "unit": "단위"}}]
+제목: {story['title']}
+URL: {story['url']}
 
-JSON 배열만 반환."""
+글자 수 제한을 반드시 지키고, JSON만 출력하세요."""
 
-
-def process_stories(stories):
-    if not stories:
-        return []
-
-    stories_text = "\n".join(
-        f"{i}. {s['title']} | HN점수: {s['score']} | {s['url']}"
-        for i, s in enumerate(stories)
+    response = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=3000,
+        system=SYSTEM_PROMPT,
+        messages=[{"role": "user", "content": user_prompt}],
     )
 
-    try:
-        response = client.messages.create(
-            model="claude-sonnet-4-6",
-            max_tokens=5000,
-            system=SYSTEM_PROMPT,
-            messages=[{"role": "user", "content": CLASSIFY_PROMPT.format(stories=stories_text)}],
-        )
-        raw = re.sub(r"```json|```", "", response.content[0].text.strip()).strip()
-        cards = json.loads(raw)
+    text = response.content[0].text.strip()
 
-        for card in cards:
-            idx = card.get("index", 0)
-            if 0 <= idx < len(stories):
-                card["url"]      = stories[idx]["url"]
-                card["hn_url"]   = stories[idx]["hn_url"]
-                card["score"]    = stories[idx]["score"]
-                card["comments"] = stories[idx]["comments"]
+    # JSON 블록 추출
+    if "```" in text:
+        text = text.split("```")[1]
+        if text.startswith("json"):
+            text = text[4:]
+        text = text.strip()
 
-        print(f"[claude] {len(cards)}개 카드 처리 완료")
-        return cards
-
-    except json.JSONDecodeError as e:
-        print(f"[claude] JSON 파싱 실패: {e}")
-        return []
-    except Exception as e:
-        print(f"[claude] API 호출 실패: {e}")
-        return []
-
-
-KEYWORD_PROMPT = """아래 오늘의 IT 뉴스들을 보고, 독자가 모를 만한 핵심 IT 용어·기술 4~6개를
-JSON 배열로 반환하세요.
-
-뉴스:
-{stories}
-
-형식:
-[{{
-  "term": "용어 (영문 약어면 그대로)",
-  "full": "풀네임 (약어일 때만, 아니면 null)",
-  "desc": "이게 뭔지 + 왜 요즘 중요한지. 한국어 2문장."
-}}]
-
-기준: 뉴스에 실제 등장, 일반인이 찾아볼 만한 것, 기초 용어 제외.
-JSON 배열만 반환."""
-
-
-def extract_daily_keywords(stories):
-    if not stories:
-        return []
-
-    stories_text = "\n".join(f"- {s['title']}" for s in stories)
-
-    try:
-        response = client.messages.create(
-            model="claude-sonnet-4-6",
-            max_tokens=1500,
-            system=SYSTEM_PROMPT,
-            messages=[{"role": "user", "content": KEYWORD_PROMPT.format(stories=stories_text)}],
-        )
-        raw = re.sub(r"```json|```", "", response.content[0].text.strip()).strip()
-        keywords = json.loads(raw)
-        print(f"[claude] 키워드 {len(keywords)}개 추출 완료")
-        return keywords
-    except Exception as e:
-        print(f"[claude] 키워드 추출 실패: {e}")
-        return []
+    data = json.loads(text)
+    data["handle"] = HANDLE
+    print(f"[claude] explainer JSON 생성 완료 ({len(data['pages'])}페이지)")
+    return data

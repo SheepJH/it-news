@@ -25,6 +25,9 @@ jobs:
       - name: 패키지 설치
         run: pip install -r requirements.txt
 
+      - name: Playwright 브라우저 설치
+        run: playwright install chromium --with-deps
+
       - name: 카드뉴스 생성
         working-directory: scripts
         env:

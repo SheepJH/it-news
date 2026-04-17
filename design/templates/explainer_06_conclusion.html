@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1080px; height: 1080px;
+    font-family: 'Pretendard', -apple-system, sans-serif;
+    background: #FAFAFA;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .card {
+    width: 1080px; height: 1080px;
+    background: #111111;
+    padding: 90px;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .header {
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .section-label {
+    color: #FFE566; font-size: 24px; letter-spacing: 2px; font-weight: 500;
+  }
+  .page-num {
+    color: #666; font-size: 22px;
+  }
+  .label-top {
+    color: #666; font-size: 26px; margin-bottom: 28px;
+    letter-spacing: 2px; font-weight: 500;
+  }
+  .headline {
+    color: white; font-size: 68px; font-weight: 500;
+    line-height: 1.35; letter-spacing: -0.02em;
+  }
+  .headline .accent { color: #FFE566; }
+  .divider {
+    width: 80px; height: 4px; background: #FFE566;
+    margin: 50px 0;
+  }
+  .body-text {
+    color: #AAA; font-size: 30px; line-height: 1.6;
+    white-space: pre-line;
+  }
+  .footer {
+    border-top: 1px solid #333;
+    padding-top: 32px;
+  }
+  .footer .next {
+    color: white; font-size: 26px; font-weight: 500;
+    margin-bottom: 8px;
+  }
+  .footer .cta {
+    color: #FFE566; font-size: 22px;
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+      <div class="section-label">{{ section_label }}</div>
+      <div class="page-num">{{ "%02d" | format(page_current) }} / {{ "%02d" | format(page_total) }}</div>
+    </div>
+    <div>
+      <div class="label-top">{{ label_top }}</div>
+      <div class="headline">{% for part in headline_parts %}{% if part.highlight %}<span class="accent">{{ part.text }}</span>{% else %}{{ part.text }}{% endif %}{% if not loop.last %}<br/>{% endif %}{% endfor %}</div>
+      <div class="divider"></div>
+      <div class="body-text">{{ body_text }}</div>
+    </div>
+    <div class="footer">
+      <div class="next">{{ next_episode }}</div>
+      <div class="cta">저장 · 팔로우 @{{ handle }}</div>
+    </div>
+  </div>
+</body>
+</html>

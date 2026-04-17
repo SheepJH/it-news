@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1080px; height: 1080px;
+    font-family: 'Pretendard', -apple-system, sans-serif;
+    background: #FAFAFA;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .card {
+    width: 1080px; height: 1080px;
+    background: #FFFFFF;
+    border: 1px solid #E8E8E8;
+    padding: 90px;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .header {
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .section-label {
+    color: #999; font-size: 24px; letter-spacing: 2px; font-weight: 500;
+  }
+  .page-num {
+    color: #999; font-size: 22px;
+  }
+  .label-top {
+    color: #999; font-size: 26px; margin-bottom: 28px;
+    letter-spacing: 2px; font-weight: 500;
+  }
+  .headline {
+    color: #111; font-size: 70px; font-weight: 500;
+    line-height: 1.35; letter-spacing: -0.02em;
+    white-space: pre-line;
+  }
+  .highlight {
+    background: linear-gradient(transparent 60%, #FFE566 60%);
+    padding: 0 6px;
+  }
+  .divider {
+    width: 80px; height: 4px; background: #111;
+    margin: 50px 0;
+  }
+  .body-text {
+    color: #555; font-size: 34px; line-height: 1.6;
+    white-space: pre-line;
+  }
+  .body-text strong {
+    font-weight: 500; color: #111;
+  }
+  .footer { color: #999; font-size: 22px; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+      <div class="section-label">{{ section_label }}</div>
+      <div class="page-num">{{ "%02d" | format(page_current) }} / {{ "%02d" | format(page_total) }}</div>
+    </div>
+    <div>
+      <div class="label-top">{{ label_top }}</div>
+      <div class="headline">{{ headline_before_highlight }}<span class="highlight">{{ headline_highlight }}</span></div>
+      <div class="divider"></div>
+      <div class="body-text">{{ body_text | safe }}</div>
+    </div>
+    <div class="footer">@{{ handle }}</div>
+  </div>
+</body>
+</html>

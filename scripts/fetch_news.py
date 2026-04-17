@@ -1,21 +1,14 @@
 import requests
 import xml.etree.ElementTree as ET
-import random
 
-# RSS 피드 소스 (카테고리별로 분산)
+# RSS 피드 소스
 RSS_FEEDS = [
-    # AI/ML
-    {"url": "https://techcrunch.com/category/artificial-intelligence/feed/", "category": "AI/ML"},
-    # 개발/오픈소스
-    {"url": "https://github.blog/feed/",                                      "category": "개발"},
-    # 보안
-    {"url": "https://feeds.feedburner.com/TheHackersNews",                    "category": "보안"},
-    # 비즈니스/스타트업
-    {"url": "https://techcrunch.com/category/startups/feed/",                 "category": "비즈니스"},
-    # 기술 전반
-    {"url": "https://www.theverge.com/rss/index.xml",                         "category": "기타"},
-    # 개발자
-    {"url": "https://feeds.feedburner.com/TechCrunch",                        "category": "개발"},
+    "https://techcrunch.com/category/artificial-intelligence/feed/",
+    "https://github.blog/feed/",
+    "https://feeds.feedburner.com/TheHackersNews",
+    "https://techcrunch.com/category/startups/feed/",
+    "https://www.theverge.com/rss/index.xml",
+    "https://feeds.feedburner.com/TechCrunch",
 ]
 
 IT_KEYWORDS = [
@@ -27,14 +20,9 @@ IT_KEYWORDS = [
     "robotics", "autonomous", "blockchain", "crypto", "tool", "release",
 ]
 
-NS = {
-    "atom": "http://www.w3.org/2005/Atom",
-    "content": "http://purl.org/rss/1.0/modules/content/",
-}
-
 
 def _parse_feed(feed_url):
-    """RSS/Atom 피드 파싱 → [{title, url, category}] 반환"""
+    """RSS/Atom 피드 파싱 → [{title, url}] 반환"""
     try:
         resp = requests.get(feed_url, timeout=10, headers={"User-Agent": "Mozilla/5.0"})
         resp.raise_for_status()
@@ -61,14 +49,12 @@ def _parse_feed(feed_url):
     return items
 
 
-def fetch_top_stories(count=5):
-    """RSS 피드에서 카테고리 분산하여 IT 뉴스 count개 반환"""
-    # 각 피드에서 후보 수집
-    pool = []  # [{title, url, category}]
+def fetch_top_stories(count=1):
+    """RSS 피드에서 IT 키워드 포함 기사 중 첫 번째 반환"""
     seen_urls = set()
 
-    for feed in RSS_FEEDS:
-        articles = _parse_feed(feed["url"])
+    for feed_url in RSS_FEEDS:
+        articles = _parse_feed(feed_url)
         for a in articles:
             url = a["url"]
             title = a["title"]
@@ -77,41 +63,9 @@ def fetch_top_stories(count=5):
             if not any(kw in title.lower() for kw in IT_KEYWORDS):
                 continue
             seen_urls.add(url)
-            pool.append({"title": title, "url": url, "category": feed["category"],
-                         "score": 0, "comments": 0, "hn_url": url})
+            story = {"title": title, "url": url, "score": 0, "comments": 0, "hn_url": url}
+            print(f"[fetch] 선택: {title}")
+            return [story]
 
-    if not pool:
-        print("[fetch] 수집된 뉴스 없음")
-        return []
-
-    # 카테고리별로 최대 2개씩 균등 선택
-    by_cat = {}
-    for item in pool:
-        by_cat.setdefault(item["category"], []).append(item)
-
-    selected = []
-    # 라운드로빈 방식으로 카테고리 균등 선택
-    cats = list(by_cat.keys())
-    random.shuffle(cats)
-    i = 0
-    cat_counts = {c: 0 for c in cats}
-    MAX_PER_CAT = 2
-
-    for item in pool:
-        if len(selected) >= count:
-            break
-        cat = item["category"]
-        if cat_counts[cat] < MAX_PER_CAT:
-            selected.append(item)
-            cat_counts[cat] += 1
-
-    # 부족하면 나머지에서 채우기
-    if len(selected) < count:
-        for item in pool:
-            if len(selected) >= count:
-                break
-            if item not in selected:
-                selected.append(item)
-
-    print(f"[fetch] {len(selected)}개 뉴스 수집 완료 (카테고리: {dict(cat_counts)})")
-    return selected[:count]
+    print("[fetch] 수집된 뉴스 없음")
+    return []
