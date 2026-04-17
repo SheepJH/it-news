@@ -28,8 +28,8 @@ def main():
     # 1. 뉴스 수집 (1개)
     stories = fetch_top_stories(count=1)
     if not stories:
-        print("[main] 수집된 뉴스 없음. 종료.")
-        sys.exit(1)
+        print("[main] 수집된 뉴스 없음. 오늘은 건너뜀.")
+        sys.exit(0)
 
     # 2. Claude로 explainer 6페이지 JSON 생성
     data = generate_explainer_json(stories[0])
