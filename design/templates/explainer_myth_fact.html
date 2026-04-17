@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1080px; height: 1080px;
+    font-family: 'Pretendard', -apple-system, sans-serif;
+    background: #FAFAFA;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .card {
+    width: 1080px; height: 1080px;
+    background: #FFFFFF;
+    border: 1px solid #E8E8E8;
+    padding: 80px;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .header {
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .section-label {
+    color: #999; font-size: 24px; letter-spacing: 2px; font-weight: 500;
+  }
+  .page-num {
+    color: #999; font-size: 22px;
+  }
+  .headline {
+    color: #111; font-size: 48px; font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+  .items {
+    display: flex; flex-direction: column; gap: 32px;
+  }
+  .myth-fact-item {
+    display: flex; flex-direction: column; gap: 0;
+    border-radius: 16px; overflow: hidden;
+  }
+  .myth-row, .fact-row {
+    display: flex; align-items: flex-start; gap: 24px;
+    padding: 22px 32px;
+  }
+  .myth-row { background: #FFF5F5; }
+  .fact-row  { background: #F0F7F0; }
+  .row-label {
+    min-width: 72px; font-size: 22px; font-weight: 500;
+    letter-spacing: 1px; padding-top: 3px; flex-shrink: 0;
+  }
+  .myth-row .row-label { color: #C44536; }
+  .fact-row  .row-label { color: #2D7A3E; }
+  .row-text {
+    font-size: 28px; line-height: 1.45;
+  }
+  .myth-row .row-text { color: #888; }
+  .fact-row  .row-text { color: #111; font-weight: 500; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+      <div class="section-label">{{ section_label }}</div>
+      <div class="page-num">{{ "%02d" | format(page_current) }} / {{ "%02d" | format(page_total) }}</div>
+    </div>
+    <div class="headline">{{ headline }}</div>
+    <div class="items">
+      {% for item in items %}
+      <div class="myth-fact-item">
+        <div class="myth-row">
+          <span class="row-label">MYTH</span>
+          <span class="row-text">{{ item.myth }}</span>
+        </div>
+        <div class="fact-row">
+          <span class="row-label">FACT</span>
+          <span class="row-text">{{ item.fact }}</span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div></div>
+  </div>
+</body>
+</html>

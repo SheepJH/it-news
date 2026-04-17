@@ -266,21 +266,24 @@ it-news/
 
 ## 🎨 템플릿 종류
 
-Claude가 기사 내용에 따라 8종 중 **4~8장을 자유 조합**.
+Claude가 기사 내용에 따라 11종 중 **4~8장을 자유 조합**.
 cover는 항상 1번, conclusion은 항상 마지막.
 
-| 템플릿 | 용도 | 주요 변수 |
+| 템플릿 | 용도 | 언제 사용 |
 |---|---|---|
-| `cover` | 표지 — 질문 형식 제목 | `question`, `subtitle`, `date` |
-| `definition` | 핵심 개념 한 줄 정의 | `headline`, `body_text` |
-| `comparison` | Before / After 비교 | `before_items`, `after_chain` |
-| `process` | 단계별 작동 원리 | `steps[{title, desc}]` |
-| `example` | 실제 사례 나열 | `items[{title, desc, tag}]` |
-| `stats` | 핵심 수치/통계 강조 | `stats[{value, label, note}]` |
-| `timeline` | 연대기/흐름 | `events[{date, event}]` |
-| `faq` | Q&A 형식 | `faqs[{q, a}]` |
-| `quote` | 주요 인용구 | `quote`, `source`, `context` |
-| `conclusion` | 한 줄 요약 마무리 | `headline_parts`, `body_text` |
+| `cover` | 표지 — 핵심 고유명사 포함 제목 | 항상 |
+| `definition` | 핵심 개념 한 줄 정의 | 새 기술/용어 소개 |
+| `comparison` | Before / After 흐름 비교 | 기존 → 새 방식 변화 |
+| `process` | 단계별 작동 원리 | "어떻게 작동하나?" |
+| `example` | 실제 사례 + LIVE/NEW 태그 | 이미 쓰이는 곳 |
+| `stats` | 핵심 수치 3개 대형 강조 | 인상적인 숫자가 있을 때 |
+| `timeline` | 날짜별 연대기 | 역사적 흐름·출시 과정 |
+| `faq` | Q&A 2~3개 | 독자가 헷갈릴 포인트 |
+| `quote` | 핵심 인물 발언 인용 | 임팩트 있는 발언 |
+| `pros_cons` | 장점 vs 단점 2열 | 기술·서비스 양면 비교 |
+| `impact` | 분야별 파급 효과 | 큰 발표의 영역별 영향 |
+| `myth_fact` | 오해(MYTH) vs 사실(FACT) | 잘못 알려진 정보 정정 |
+| `conclusion` | 한 줄 요약 마무리 | 항상 |
 
 ---
 

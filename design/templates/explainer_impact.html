@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1080px; height: 1080px;
+    font-family: 'Pretendard', -apple-system, sans-serif;
+    background: #FAFAFA;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .card {
+    width: 1080px; height: 1080px;
+    background: #FFFFFF;
+    border: 1px solid #E8E8E8;
+    padding: 80px;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .header {
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .section-label {
+    color: #999; font-size: 24px; letter-spacing: 2px; font-weight: 500;
+  }
+  .page-num {
+    color: #999; font-size: 22px;
+  }
+  .headline {
+    color: #111; font-size: 48px; font-weight: 500;
+    letter-spacing: -0.02em; margin-bottom: 0;
+  }
+  .impacts {
+    display: flex; flex-direction: column; gap: 28px;
+  }
+  .impact-item {
+    display: flex; align-items: flex-start; gap: 36px;
+    padding: 30px 36px;
+    background: #FAFAFA; border-radius: 16px;
+    border-left: 4px solid #FFE566;
+  }
+  .impact-area {
+    min-width: 140px;
+    color: #111; font-size: 26px; font-weight: 500;
+    padding-top: 2px;
+  }
+  .impact-desc {
+    color: #555; font-size: 28px; line-height: 1.5;
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+      <div class="section-label">{{ section_label }}</div>
+      <div class="page-num">{{ "%02d" | format(page_current) }} / {{ "%02d" | format(page_total) }}</div>
+    </div>
+    <div class="headline">{{ headline }}</div>
+    <div class="impacts">
+      {% for item in impacts %}
+      <div class="impact-item">
+        <div class="impact-area">{{ item.area }}</div>
+        <div class="impact-desc">{{ item.desc }}</div>
+      </div>
+      {% endfor %}
+    </div>
+    <div></div>
+  </div>
+</body>
+</html>
