@@ -44,3 +44,25 @@ jobs:
           git add docs/
           git diff --staged --quiet || git commit -m "📰 $(date +'%Y-%m-%d') 카드뉴스 자동 생성"
           git push
+
+      - name: Slack 알림 (Pages 배포 대기 후 전송)
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          GH_REPO:           ${{ secrets.GH_REPO }}
+        run: |
+          sleep 30
+          python -c "
+import os, sys
+sys.path.insert(0, 'scripts')
+from slack_notify import send_daily_card
+from datetime import datetime
+today = datetime.utcnow().strftime('%Y-%m-%d')
+repo  = os.environ.get('GH_REPO', '')
+user  = repo.split('/')[0] if '/' in repo else ''
+name  = repo.split('/')[1] if '/' in repo else 'it-news'
+page_url      = f'https://{user}.github.io/{name}/{today}.html'
+thumbnail_url = f'https://{user}.github.io/{name}/{today}/card_01.png'
+import glob
+card_count = len(glob.glob(f'docs/{today}/card_*.png'))
+send_daily_card(today, page_url, card_count=card_count, thumbnail_url=thumbnail_url)
+          "
