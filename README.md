@@ -4,7 +4,12 @@
 > GitHub Pages에 배포하고 Slack으로 알림을 보내는 자동화 파이프라인.
 
 ![Claude](https://img.shields.io/badge/Claude-Sonnet_4.6-black?style=flat-square)
+![Python](https://img.shields.io/badge/Python-3.9+-3776AB?style=flat-square&logo=python&logoColor=white)
+![Playwright](https://img.shields.io/badge/Playwright-렌더링-2EAD33?style=flat-square&logo=playwright&logoColor=white)
+![Jinja2](https://img.shields.io/badge/Jinja2-템플릿-B41717?style=flat-square)
 ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-자동실행-2088FF?style=flat-square&logo=github-actions&logoColor=white)
+![GitHub Pages](https://img.shields.io/badge/GitHub_Pages-호스팅-222222?style=flat-square&logo=github&logoColor=white)
+![Slack](https://img.shields.io/badge/Slack-알림-4A154B?style=flat-square&logo=slack&logoColor=white)
 ![Cost](https://img.shields.io/badge/비용-$0.03_/_회-00C851?style=flat-square)
 
 ---
@@ -39,52 +44,52 @@
 
 ---
 
-## 파이프라인 흐름
+## 🔄 파이프라인 흐름
 
 ```
 [GitHub Actions — 매일 KST 09:00]
-          │
-          ▼
-┌─────────────────────────────────┐
-│ 1. 뉴스 수집                     │
-│    HN 상위 50개 병렬 조회         │
-│    → 점수순 정렬                  │
-│    → 24시간 이내 + IT 키워드 필터  │
-│    → 중복 제거 후 1개 선택         │
-└────────────────┬────────────────┘
-                 │
-                 ▼
-┌─────────────────────────────────┐
-│ 2. 카드뉴스 JSON 생성             │
-│    Claude Sonnet API             │
-│    → 8종 템플릿 중 자유 조합       │
-│    → 4~8페이지 구성 + 키워드 3개  │
-└────────────────┬────────────────┘
-                 │
-                 ▼
-┌─────────────────────────────────┐
-│ 3. PNG 렌더링                    │
-│    Jinja2 → HTML → Playwright   │
-│    → 1080×1080 PNG × N장         │
-└────────────────┬────────────────┘
-                 │
-                 ▼
-┌─────────────────────────────────┐
-│ 4. 배포                          │
-│    뷰어 HTML + 인덱스 생성         │
-│    → docs/ 커밋 → GitHub Pages   │
-└────────────────┬────────────────┘
-                 │
-                 ▼
-┌─────────────────────────────────┐
-│ 5. Slack 알림                    │
-│    썸네일 + 링크 → Webhook        │
-└─────────────────────────────────┘
+         │
+         ▼
+┌────────────────────────────────────────┐
+│  1. 뉴스 수집
+│     HN 상위 50개 병렬 조회
+│     → 점수순 정렬
+│     → 24시간 이내 + IT 키워드 필터
+│     → 중복 제거 후 1개 선택
+└──────────────────┬─────────────────────┘
+                   │
+                   ▼
+┌────────────────────────────────────────┐
+│  2. 카드뉴스 JSON 생성
+│     Claude Sonnet API
+│     → 8종 템플릿 중 자유 조합
+│     → 4~8페이지 구성 + 키워드 3개
+└──────────────────┬─────────────────────┘
+                   │
+                   ▼
+┌────────────────────────────────────────┐
+│  3. PNG 렌더링
+│     Jinja2 → HTML → Playwright
+│     → 1080×1080 PNG × N장
+└──────────────────┬─────────────────────┘
+                   │
+                   ▼
+┌────────────────────────────────────────┐
+│  4. 배포
+│     뷰어 HTML + 인덱스 생성
+│     → docs/ 커밋 → GitHub Pages
+└──────────────────┬─────────────────────┘
+                   │
+                   ▼
+┌────────────────────────────────────────┐
+│  5. Slack 알림
+│     썸네일 + 링크 → Webhook
+└────────────────────────────────────────┘
 ```
 
 ---
 
-## 비용 분석
+## 💰 비용 분석
 
 ### 한눈에 보기
 
@@ -116,7 +121,7 @@ claude-sonnet-4-6 기준
 
 ---
 
-## 기술 선택 이유 및 대안
+## 🛠 기술 선택 이유 및 대안
 
 ### 1. 뉴스 수집 — Hacker News API ✅
 
@@ -217,7 +222,7 @@ claude-sonnet-4-6 기준
 
 ---
 
-## 파일 구조
+## 📁 파일 구조
 
 ```
 it-news/
@@ -259,7 +264,7 @@ it-news/
 
 ---
 
-## 템플릿 종류
+## 🎨 템플릿 종류
 
 Claude가 기사 내용에 따라 8종 중 **4~8장을 자유 조합**.
 cover는 항상 1번, conclusion은 항상 마지막.
@@ -279,7 +284,7 @@ cover는 항상 1번, conclusion은 항상 마지막.
 
 ---
 
-## 설치 및 실행
+## 🚀 설치 및 실행
 
 ### 로컬 테스트 (API 비용 없음)
 
@@ -304,7 +309,7 @@ python main.py
 
 ---
 
-## GitHub Actions 설정
+## ⚙️ GitHub Actions 설정
 
 ### 필요한 Secrets
 
