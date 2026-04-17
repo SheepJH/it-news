@@ -1,191 +1,219 @@
 # IT 카드뉴스 자동화
 
-매일 오전 9시, Hacker News 상위 기사를 AI가 한국어 카드뉴스로 변환해 GitHub Pages에 배포하고 Slack으로 알림을 보내는 자동화 파이프라인.
+> 매일 오전 9시, Hacker News 상위 기사를 AI가 한국어 카드뉴스로 변환해
+> GitHub Pages에 배포하고 Slack으로 알림을 보내는 자동화 파이프라인.
+
+![Claude](https://img.shields.io/badge/Claude-Sonnet_4.6-black?style=flat-square)
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-자동실행-2088FF?style=flat-square&logo=github-actions&logoColor=white)
+![Cost](https://img.shields.io/badge/비용-$0.03_/_회-00C851?style=flat-square)
 
 ---
 
-## 결과물 예시
+## 목차
 
-- 뷰어: `https://{username}.github.io/it-news/YYYY-MM-DD.html`
-- 모바일 가로 스와이프 캐러셀, 하단 핵심 키워드 섹션
-- 카드 4~8장 (기사 복잡도에 따라 Claude가 자동 결정)
+1. [결과물](#결과물)
+2. [파이프라인 흐름](#파이프라인-흐름)
+3. [비용 분석](#비용-분석)
+4. [기술 선택 이유 및 대안](#기술-선택-이유-및-대안)
+5. [파일 구조](#파일-구조)
+6. [템플릿 종류](#템플릿-종류)
+7. [설치 및 실행](#설치-및-실행)
+8. [GitHub Actions 설정](#github-actions-설정)
 
 ---
 
-## 파이프라인 전체 흐름
+## 결과물
+
+모바일 기준 가로 스와이프 캐러셀. 하단에 핵심 키워드 섹션.
+
+<table>
+<tr>
+<td><img src="docs/2026-04-17/card_01.png" width="240"/></td>
+<td><img src="docs/2026-04-17/card_02.png" width="240"/></td>
+<td><img src="docs/2026-04-17/card_03.png" width="240"/></td>
+</tr>
+</table>
+
+- 카드 **4~8장** (기사 복잡도에 따라 Claude가 자동 결정)
+- 뷰어 URL: `https://{username}.github.io/it-news/YYYY-MM-DD.html`
+
+---
+
+## 파이프라인 흐름
 
 ```
-[GitHub Actions - 매일 09:00 KST]
-        │
-        ▼
-1. 뉴스 수집 (Hacker News API)
-   HN 상위 50개 → 점수순 정렬 → 24시간 이내 + IT 키워드 → 1개 선택
-        │
-        ▼
-2. 카드뉴스 JSON 생성 (Claude Sonnet API)
-   기사 제목 + URL → 4~8페이지 구성 결정 → Jinja2 렌더링용 JSON 반환
-        │
-        ▼
-3. PNG 렌더링 (Jinja2 + Playwright)
-   JSON → HTML 템플릿 → Headless Chrome → PNG (1080×1080)
-        │
-        ▼
-4. 뷰어 HTML 생성 + GitHub Pages 배포
-   캐러셀 뷰어 + 키워드 섹션 → docs/ 커밋 → GitHub Pages 자동 반영
-        │
-        ▼
-5. Slack 알림
-   썸네일 + 링크 → Incoming Webhook → DM 수신
+[GitHub Actions — 매일 KST 09:00]
+          │
+          ▼
+┌─────────────────────────────────┐
+│ 1. 뉴스 수집                     │
+│    HN 상위 50개 병렬 조회         │
+│    → 점수순 정렬                  │
+│    → 24시간 이내 + IT 키워드 필터  │
+│    → 중복 제거 후 1개 선택         │
+└────────────────┬────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────┐
+│ 2. 카드뉴스 JSON 생성             │
+│    Claude Sonnet API             │
+│    → 8종 템플릿 중 자유 조합       │
+│    → 4~8페이지 구성 + 키워드 3개  │
+└────────────────┬────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────┐
+│ 3. PNG 렌더링                    │
+│    Jinja2 → HTML → Playwright   │
+│    → 1080×1080 PNG × N장         │
+└────────────────┬────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────┐
+│ 4. 배포                          │
+│    뷰어 HTML + 인덱스 생성         │
+│    → docs/ 커밋 → GitHub Pages   │
+└────────────────┬────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────┐
+│ 5. Slack 알림                    │
+│    썸네일 + 링크 → Webhook        │
+└─────────────────────────────────┘
 ```
 
 ---
 
 ## 비용 분석
 
-### 실제 과금 항목
+### 한눈에 보기
 
-| 항목 | 비용 | 비고 |
+| 단계 | 서비스 | 비용 |
 |---|---|---|
-| **Claude Sonnet API** | 약 $0.03 / 1회 | 입력 ~2,000토큰 + 출력 ~1,500토큰 |
-| 나머지 전부 | **$0** | HN API, GitHub Actions, GitHub Pages, Slack 모두 무료 |
+| 뉴스 수집 | Hacker News API | **무료** |
+| AI 생성 | Claude Sonnet API | **≈ $0.03 / 회** |
+| 렌더링 | Playwright (로컬/Actions) | **무료** |
+| 호스팅 | GitHub Pages | **무료** |
+| 스케줄링 | GitHub Actions | **무료** (공개 레포) |
+| 알림 | Slack Webhook | **무료** |
 
-### Claude API 상세 계산
+### Claude API 상세
 
 ```
-claude-sonnet-4-6 기준 (2025년)
-  Input:  $3.00 / 1M tokens  →  2,000 tokens = $0.006
-  Output: $15.00 / 1M tokens →  1,500 tokens = $0.023
-  ──────────────────────────────────────────────────
-  1회 합계:                           ≈ $0.03
+claude-sonnet-4-6 기준
+  Input  ($3.00 / 1M tokens) :  ~2,000 tokens = $0.006
+  Output ($15.00 / 1M tokens):  ~1,500 tokens = $0.023
+  ───────────────────────────────────────────────────
+  1회 합계                              ≈ $0.03
 
-월간 (30회):   ≈ $0.90
-연간 (365회):  ≈ $10.95
-$5 충전 시:    ≈ 166회 (약 5.5개월)
+  월간 (30회)   ≈ $0.90
+  연간 (365회)  ≈ $10.95
+  $5 충전 시    ≈ 166회 (약 5.5개월)
 ```
 
-### GitHub Actions 무료 한도
-
-공개 레포는 무제한 무료. 비공개 레포는 월 2,000분 무료 (1회 실행 약 3~5분 소요).
+> **GitHub Actions 무료 한도**
+> 공개 레포 무제한 무료. 비공개 레포는 월 2,000분 (1회 약 3~5분 소요).
 
 ---
 
-## 각 기술 선택 이유 및 대안
+## 기술 선택 이유 및 대안
 
-### 1. 뉴스 수집 — Hacker News API
+### 1. 뉴스 수집 — Hacker News API ✅
 
 **선택 이유**
 - 완전 무료, 인증 불필요
-- 커뮤니티 투표로 검증된 기사 (수백~수천 명이 "읽을 만하다"고 올린 것들)
-- 점수 기반 정렬로 "오늘 가장 핫한 IT 기사" 자동 선별
-- `created_at` 타임스탬프로 24시간 필터 가능
+- 커뮤니티 투표로 검증된 기사 품질 (수백~수천 명이 직접 선별)
+- 점수 기반 정렬 → "오늘 가장 핫한 IT 기사" 자동 선별
+- `time` 필드로 24시간 필터 + 중복 방지 가능
 
-**대안 비교**
-
-| 방식 | 비용 | 품질 | 비고 |
+| 대안 | 비용 | 품질 | 비고 |
 |---|---|---|---|
-| **HN API** ✅ | 무료 | 높음 | 커뮤니티 검증 |
-| RSS 멀티피드 | 무료 | 중간 | 소스별 편향 가능 |
-| NewsAPI | 무료(100req/일) ~ $449/월 | 높음 | 무료 플랜은 24시간 딜레이 |
-| Google News RSS | 무료 | 중간 | 비공식, 불안정 |
+| **HN API** ✅ | 무료 | ★★★★★ | 커뮤니티 검증 |
+| RSS 멀티피드 | 무료 | ★★★☆☆ | 소스별 편향 가능 |
+| NewsAPI | 무료~$449/월 | ★★★★☆ | 무료 플랜은 24시간 딜레이 |
+| Google News RSS | 무료 | ★★★☆☆ | 비공식, 불안정 |
 
 ---
 
-### 2. 카드뉴스 생성 — Claude Sonnet API
+### 2. AI 생성 — Claude Sonnet API ✅
 
 **선택 이유**
-- 한국어 품질이 GPT-4o와 동등하거나 우수
+- 한국어 출력 품질이 GPT-4o와 동등하거나 우수
 - 긴 System Prompt + 복잡한 JSON 스키마를 정확히 따름
-- Sonnet은 Opus 대비 5배 저렴하면서 구조화 출력 품질 동일
+- Opus 대비 5배 저렴, 구조화 출력 품질 동일
 
-**대안 비교**
-
-| 모델 | 1회 비용 | 한국어 | 구조화 출력 |
+| 대안 | 1회 비용 | 한국어 | JSON 정확도 |
 |---|---|---|---|
-| **Claude Sonnet 4.6** ✅ | ~$0.03 | 우수 | 우수 |
-| Claude Opus 4.6 | ~$0.15 | 최고 | 최고 |
-| GPT-4o | ~$0.04 | 우수 | 우수 |
-| GPT-4o mini | ~$0.005 | 양호 | 양호 |
-| Gemini 1.5 Pro | ~$0.02 | 양호 | 양호 |
-
-> 비용을 더 줄이고 싶다면 GPT-4o mini 또는 Gemini Flash 고려 가능. 단 복잡한 JSON 스키마 준수율이 낮아질 수 있음.
+| **Claude Sonnet 4.6** ✅ | ~$0.03 | ★★★★★ | ★★★★★ |
+| Claude Opus 4.6 | ~$0.15 | ★★★★★ | ★★★★★ |
+| GPT-4o | ~$0.04 | ★★★★★ | ★★★★☆ |
+| GPT-4o mini | ~$0.005 | ★★★★☆ | ★★★★☆ |
+| Gemini 1.5 Flash | ~$0.002 | ★★★☆☆ | ★★★☆☆ |
 
 ---
 
-### 3. 렌더링 — Jinja2 + Playwright
+### 3. 렌더링 — Jinja2 + Playwright ✅
 
 **선택 이유**
-- 디자인을 코드(HTML/CSS)로 완전 제어 가능
-- 외부 디자인 API 의존 없음 → 비용 $0
-- 1080×1080 정확한 픽셀 렌더링 (인스타그램 규격)
+- HTML/CSS로 디자인을 코드 레벨에서 완전 제어
+- 외부 디자인 API 불필요 → 비용 $0
+- 1080×1080 정확한 픽셀 렌더링 (인스타그램 정사각형 규격)
 - 템플릿 추가/수정이 HTML 파일 하나로 끝남
 
-**대안 비교**
-
-| 방식 | 비용 | 유연성 | 비고 |
+| 대안 | 비용 | 디자인 자유도 | 비고 |
 |---|---|---|---|
-| **Jinja2 + Playwright** ✅ | 무료 | 최고 | 직접 HTML/CSS 작성 |
-| Puppeteer | 무료 | 최고 | Node.js 기반 |
-| Canva API | $13/월~ | 중간 | 템플릿 제한 |
-| html2image | 무료 | 중간 | 품질 낮음 |
-| wkhtmltopdf | 무료 | 중간 | CSS 지원 불완전 |
+| **Jinja2 + Playwright** ✅ | 무료 | ★★★★★ | HTML/CSS 직접 제어 |
+| Puppeteer | 무료 | ★★★★★ | Node.js 기반 |
+| Canva API | $13/월~ | ★★★☆☆ | 템플릿 제한 |
+| wkhtmltopdf | 무료 | ★★★☆☆ | CSS 지원 불완전 |
 
 ---
 
-### 4. 호스팅 — GitHub Pages
+### 4. 호스팅 — GitHub Pages ✅
 
 **선택 이유**
 - 완전 무료 (공개 레포)
-- git push 한 번으로 자동 배포
-- URL이 깔끔하고 영구적
+- `git push` 한 번으로 자동 배포
 - 코드와 결과물을 같은 레포에서 버전 관리
 
-**대안 비교**
-
-| 방식 | 비용 | 편의성 | 비고 |
+| 대안 | 비용 | 편의성 | 비고 |
 |---|---|---|---|
-| **GitHub Pages** ✅ | 무료 | 높음 | git push = 배포 |
-| Vercel | 무료(취미) | 높음 | 더 빠른 CDN |
-| Netlify | 무료(취미) | 높음 | 유사 |
-| S3 + CloudFront | ~$1/월 | 낮음 | 설정 복잡 |
+| **GitHub Pages** ✅ | 무료 | ★★★★★ | push = 배포 |
+| Vercel | 무료(취미) | ★★★★★ | 더 빠른 CDN |
+| Netlify | 무료(취미) | ★★★★★ | 유사 |
+| AWS S3 + CloudFront | ~$1/월 | ★★★☆☆ | 설정 복잡 |
 
 ---
 
-### 5. 스케줄링 — GitHub Actions
+### 5. 스케줄링 — GitHub Actions ✅
 
 **선택 이유**
 - 별도 서버 불필요
 - cron 표현식으로 정확한 시간 예약
-- 실행 로그, 실패 알림 기본 제공
-- 이미 GitHub을 쓰므로 추가 비용/설정 없음
+- 실행 로그 + 실패 알림 기본 제공
 
-**대안 비교**
-
-| 방식 | 비용 | 비고 |
+| 대안 | 비용 | 비고 |
 |---|---|---|
-| **GitHub Actions** ✅ | 무료 | 서버리스, 공개 레포 무제한 |
-| cron + 개인 서버 | 서버비 | 항상 켜져있어야 함 |
+| **GitHub Actions** ✅ | 무료 | 공개 레포 무제한 |
+| cron + 개인 서버 | 서버비 | 항상 켜져야 함 |
 | AWS Lambda + EventBridge | ~$0/월 | 설정 복잡 |
 | Railway / Render | $5~/월 | 간단하지만 유료 |
 
 ---
 
-### 6. 알림 — Slack Incoming Webhook
+### 6. 알림 — Slack Incoming Webhook ✅
 
 **선택 이유**
 - Webhook URL 하나만 발급하면 끝 (토큰 갱신 없음)
 - 모바일 앱 푸시 알림 확실
-- 썸네일 이미지 자동 표시
-- 버튼 클릭으로 바로 뷰어 이동
+- 썸네일 이미지 자동 표시 + 버튼 클릭으로 바로 뷰어 이동
 
-**대안 비교**
-
-| 방식 | 설정 난이도 | 푸시 알림 | 비고 |
+| 대안 | 설정 난이도 | 푸시 알림 | 비고 |
 |---|---|---|---|
-| **Slack Webhook** ✅ | 쉬움 | 있음 | 토큰 관리 불필요 |
-| Telegram Bot | 쉬움 | 있음 | 개인용으로 추천 대안 |
-| Discord Webhook | 쉬움 | 있음 | 게이머 친화적 |
-| 카카오 나에게 보내기 | 어려움 | 없음 | 토큰 만료 관리 필요 |
-| 이메일 (Gmail SMTP) | 중간 | 없음 | 실시간성 낮음 |
+| **Slack Webhook** ✅ | ★☆☆☆☆ | 있음 | 토큰 관리 불필요 |
+| Telegram Bot | ★☆☆☆☆ | 있음 | 개인용 추천 대안 |
+| Discord Webhook | ★☆☆☆☆ | 있음 | 유사 |
+| 카카오 나에게 보내기 | ★★★★☆ | 없음 | 토큰 만료 관리 필요 |
 
 ---
 
@@ -195,9 +223,10 @@ $5 충전 시:    ≈ 166회 (약 5.5개월)
 it-news/
 ├── .github/
 │   └── workflows/
-│       └── daily-news.yml       # GitHub Actions 스케줄러
+│       └── daily-news.yml          # 매일 09:00 KST 자동 실행
+│
 ├── design/
-│   └── templates/               # Jinja2 HTML 템플릿 (1080×1080)
+│   └── templates/                  # Jinja2 HTML 템플릿 (1080×1080)
 │       ├── explainer_01_cover.html
 │       ├── explainer_02_definition.html
 │       ├── explainer_03_comparison.html
@@ -208,41 +237,45 @@ it-news/
 │       ├── explainer_timeline.html
 │       ├── explainer_faq.html
 │       └── explainer_quote.html
-├── docs/                        # GitHub Pages 서빙 디렉토리
-│   ├── index.html               # 날짜별 썸네일 그리드
-│   ├── YYYY-MM-DD.html          # 스와이프 뷰어
+│
+├── docs/                           # GitHub Pages 루트
+│   ├── index.html                  # 날짜별 썸네일 그리드
+│   ├── YYYY-MM-DD.html             # 스와이프 뷰어
 │   └── YYYY-MM-DD/
 │       ├── card_01.png
 │       └── card_N.png
+│
 ├── scripts/
-│   ├── main.py                  # 진입점, 파이프라인 오케스트레이션
-│   ├── fetch_news.py            # HN API 뉴스 수집
-│   ├── claude_processor.py      # Claude API JSON 생성
-│   ├── renderer.py              # HTML → PNG 렌더링, 뷰어 생성
-│   ├── slack_notify.py          # Slack 알림
-│   └── test_render.py           # 로컬 테스트 (API 비용 없이 렌더링 확인)
+│   ├── main.py                     # 파이프라인 오케스트레이션
+│   ├── fetch_news.py               # HN API 뉴스 수집
+│   ├── claude_processor.py         # Claude API JSON 생성
+│   ├── renderer.py                 # HTML → PNG, 뷰어 HTML 생성
+│   ├── slack_notify.py             # Slack 알림 전송
+│   └── test_render.py              # 로컬 테스트 (API 비용 없음)
+│
 ├── requirements.txt
 └── .env.example
 ```
 
 ---
 
-## 템플릿 종류 (8종)
+## 템플릿 종류
 
-Claude가 기사 내용에 따라 4~8장을 자유 조합.
+Claude가 기사 내용에 따라 8종 중 **4~8장을 자유 조합**.
+cover는 항상 1번, conclusion은 항상 마지막.
 
-| 템플릿 | 용도 | 핵심 변수 |
+| 템플릿 | 용도 | 주요 변수 |
 |---|---|---|
-| `explainer_01_cover` | 표지 (항상 1페이지) | question, subtitle, date |
-| `explainer_02_definition` | 핵심 개념 정의 | headline, body_text |
-| `explainer_03_comparison` | Before / After 비교 | before_items, after_chain |
-| `explainer_04_process` | 단계별 작동 원리 | steps[{title, desc}] |
-| `explainer_05_example` | 실제 사례 | items[{title, desc, tag}] |
-| `explainer_06_conclusion` | 한 줄 요약 (항상 마지막) | headline_parts, body_text |
-| `explainer_stats` | 핵심 수치/통계 | stats[{value, label, note}] |
-| `explainer_timeline` | 연대기/흐름 | events[{date, event}] |
-| `explainer_faq` | Q&A | faqs[{q, a}] |
-| `explainer_quote` | 주요 인용구 | quote, source, context |
+| `cover` | 표지 — 질문 형식 제목 | `question`, `subtitle`, `date` |
+| `definition` | 핵심 개념 한 줄 정의 | `headline`, `body_text` |
+| `comparison` | Before / After 비교 | `before_items`, `after_chain` |
+| `process` | 단계별 작동 원리 | `steps[{title, desc}]` |
+| `example` | 실제 사례 나열 | `items[{title, desc, tag}]` |
+| `stats` | 핵심 수치/통계 강조 | `stats[{value, label, note}]` |
+| `timeline` | 연대기/흐름 | `events[{date, event}]` |
+| `faq` | Q&A 형식 | `faqs[{q, a}]` |
+| `quote` | 주요 인용구 | `quote`, `source`, `context` |
+| `conclusion` | 한 줄 요약 마무리 | `headline_parts`, `body_text` |
 
 ---
 
@@ -255,16 +288,15 @@ pip install -r requirements.txt
 playwright install chromium
 
 cd scripts
-python test_render.py
-open ../docs/_test.html
+python test_render.py        # 목 데이터로 PNG + 뷰어 생성
+open ../docs/_test.html      # 브라우저에서 확인
 ```
 
 ### 전체 파이프라인 실행
 
 ```bash
-# .env 파일 작성
 cp .env.example .env
-# ANTHROPIC_API_KEY 입력
+# .env에 ANTHROPIC_API_KEY 입력
 
 cd scripts
 python main.py
@@ -276,17 +308,20 @@ python main.py
 
 ### 필요한 Secrets
 
-| Secret | 설명 |
-|---|---|
-| `ANTHROPIC_API_KEY` | Anthropic Console에서 발급 |
-| `SLACK_WEBHOOK_URL` | Slack 앱 → Incoming Webhooks |
-| `GH_REPO` | `username/it-news` 형식 |
+레포 → **Settings → Secrets and variables → Actions**
+
+| Secret | 값 | 발급 방법 |
+|---|---|---|
+| `ANTHROPIC_API_KEY` | `sk-ant-...` | [console.anthropic.com](https://console.anthropic.com) |
+| `SLACK_WEBHOOK_URL` | `https://hooks.slack.com/...` | Slack 앱 → Incoming Webhooks |
+| `GH_REPO` | `username/it-news` | 직접 입력 |
 
 ### 실행 시간 변경
 
-`.github/workflows/daily-news.yml`에서 cron 수정:
+`.github/workflows/daily-news.yml` cron 수정:
 
 ```yaml
-- cron: '0 0 * * *'   # UTC 00:00 = KST 09:00
-- cron: '0 22 * * *'  # UTC 22:00 = KST 07:00
+- cron: '0 0 * * *'    # UTC 00:00 = KST 09:00  ← 현재
+- cron: '0 22 * * *'   # UTC 22:00 = KST 07:00
+- cron: '0 2 * * *'    # UTC 02:00 = KST 11:00
 ```
