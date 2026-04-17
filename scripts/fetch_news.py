@@ -1,7 +1,6 @@
 import requests
-from datetime import datetime
 
-HN_API = "https://hacker-news.firebaseio.com/v1"
+ALGOLIA_URL = "https://hn.algolia.com/api/v1/search"
 
 IT_KEYWORDS = [
     "ai", "gpt", "llm", "claude", "openai", "google", "microsoft", "apple",
@@ -14,42 +13,38 @@ IT_KEYWORDS = [
 
 
 def fetch_top_stories(count=5):
-    """HackerNews 상위 스토리 중 IT 관련 뉴스 count개 반환"""
+    """Algolia HN API로 오늘 상위 IT 뉴스 count개 반환"""
     try:
-        resp = requests.get(f"{HN_API}/topstories.json", timeout=10)
+        resp = requests.get(ALGOLIA_URL, params={
+            "tags": "front_page",
+            "hitsPerPage": 50,
+        }, timeout=10)
         resp.raise_for_status()
-        data = resp.json()
-        if not isinstance(data, list):
-            print(f"[fetch] HN 응답 형식 오류: {data}")
-            return []
-        ids = data[:80]
+        hits = resp.json().get("hits", [])
     except Exception as e:
         print(f"[fetch] HN top stories 요청 실패: {e}")
         return []
 
     stories = []
-    for story_id in ids:
+    for item in hits:
         if len(stories) >= count:
             break
-        try:
-            item = requests.get(f"{HN_API}/item/{story_id}.json", timeout=8).json()
-        except Exception:
+
+        url = item.get("url") or ""
+        title = item.get("title") or ""
+        if not url or not title:
             continue
 
-        if not item or item.get("type") != "story" or not item.get("url"):
-            continue
-
-        title_lower = item["title"].lower()
-        if not any(kw in title_lower for kw in IT_KEYWORDS):
+        if not any(kw in title.lower() for kw in IT_KEYWORDS):
             continue
 
         stories.append({
-            "title": item["title"],
-            "url": item["url"],
-            "score": item.get("score", 0),
-            "comments": item.get("descendants", 0),
-            "by": item.get("by", ""),
-            "hn_url": f"https://news.ycombinator.com/item?id={story_id}",
+            "title": title,
+            "url": url,
+            "score": item.get("points", 0),
+            "comments": item.get("num_comments", 0),
+            "by": item.get("author", ""),
+            "hn_url": f"https://news.ycombinator.com/item?id={item.get('objectID','')}",
         })
 
     print(f"[fetch] {len(stories)}개 뉴스 수집 완료")
