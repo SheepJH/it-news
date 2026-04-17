@@ -7,7 +7,6 @@ on:
 
 permissions:
   contents: write   # docs/ 푸시용
-  secrets: write    # 카카오 토큰 자동 갱신용
 
 jobs:
   generate:
