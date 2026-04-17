@@ -16,7 +16,7 @@
     background: #FFFFFF;
     border: 1px solid #E8E8E8;
     padding: 80px;
-    display: flex; flex-direction: column; justify-content: flex-start; gap: 60px;
+    display: flex; flex-direction: column; gap: 48px;
   }
   .header {
     display: flex; justify-content: space-between; align-items: center;
@@ -29,38 +29,43 @@
   }
   .headline {
     color: #111; font-size: 46px; font-weight: 500;
-    margin-bottom: 40px; letter-spacing: -0.02em;
+    letter-spacing: -0.02em;
+  }
+  .boxes {
+    display: flex; flex-direction: column; gap: 20px; flex: 1;
   }
   .box {
-    border-radius: 20px; padding: 36px 40px; margin-bottom: 22px;
+    border-radius: 20px; padding: 36px 44px;
+    flex: 1; display: flex; flex-direction: column; gap: 18px;
   }
-  .box-before { background: #FAFAFA; }
-  .box-after { background: #F0F7F0; }
+  .box-before { background: #FFF5F5; }
+  .box-after  { background: #F0F7F0; }
   .box-label {
     font-size: 22px; font-weight: 500; letter-spacing: 2px;
-    margin-bottom: 18px;
   }
   .label-before { color: #C44536; }
-  .label-after { color: #2D7A3E; }
-  .chain {
-    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
-    font-size: 26px;
+  .label-after  { color: #2D7A3E; }
+  .items {
+    display: flex; flex-direction: column; gap: 14px;
   }
-  .chip {
-    background: white; border: 1px solid #E0E0E0;
-    padding: 10px 18px; border-radius: 8px; color: #555;
+  .item {
+    display: flex; align-items: center; gap: 20px;
   }
-  .chip-after { border-color: #C8E0C8; color: #2D7A3E; font-weight: 500; }
-  .chip-highlight {
-    background: #2D7A3E; color: white; border: none; font-weight: 500;
+  .item-marker {
+    font-size: 26px; font-weight: 500; flex-shrink: 0; line-height: 1;
   }
-  .arrow { color: #C44536; font-size: 24px; }
-  .arrow-after { color: #2D7A3E; }
+  .marker-before { color: #C44536; }
+  .marker-after  { color: #2D7A3E; }
+  .item-text {
+    font-size: 30px; line-height: 1.4;
+  }
+  .before .item-text { color: #555; }
+  .after  .item-text { color: #111; font-weight: 500; }
   .box-note {
-    font-size: 22px; margin-top: 18px;
+    font-size: 22px; padding-top: 4px;
   }
-  .note-before { color: #999; }
-  .note-after { color: #2D7A3E; }
+  .note-before { color: #C44536; opacity: 0.7; }
+  .note-after  { color: #2D7A3E; }
 </style>
 </head>
 <body>
@@ -69,30 +74,28 @@
       <div class="section-label">{{ section_label }}</div>
       <div class="page-num">{{ "%02d" | format(page_current) }} / {{ "%02d" | format(page_total) }}</div>
     </div>
-    <div>
-      <div class="headline">{{ headline }}</div>
+    <div class="headline">{{ headline }}</div>
+    <div class="boxes">
       <div class="box box-before">
         <div class="box-label label-before">{{ before_label }}</div>
-        <div class="chain">
+        <div class="items before">
           {% for item in before_items %}
-            <span class="chip">{{ item }}</span>
-            {% if not loop.last %}<span class="arrow">↔</span>{% endif %}
+          <div class="item">
+            <span class="item-marker marker-before">✗</span>
+            <span class="item-text">{{ item }}</span>
+          </div>
           {% endfor %}
         </div>
         <div class="box-note note-before">{{ before_note }}</div>
       </div>
       <div class="box box-after">
         <div class="box-label label-after">{{ after_label }}</div>
-        <div class="chain">
+        <div class="items after">
           {% for item in after_chain %}
-            {% if loop.index == 2 %}
-              <span class="chip chip-highlight">{{ item }}</span>
-            {% elif loop.first %}
-              <span class="chip chip-after">{{ item }}</span>
-            {% else %}
-              <span class="chip">{{ item }}</span>
-            {% endif %}
-            {% if not loop.last %}<span class="arrow arrow-after">→</span>{% endif %}
+          <div class="item">
+            <span class="item-marker marker-after">✓</span>
+            <span class="item-text">{{ item }}</span>
+          </div>
           {% endfor %}
         </div>
         <div class="box-note note-after">{{ after_note }}</div>

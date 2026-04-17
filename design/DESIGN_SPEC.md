@@ -93,15 +93,15 @@
 **padding**: 80px | layout: `flex-start; gap: 60px`
 
 - 헤드라인: 46px, weight 500, #111, letter-spacing -0.02em, margin-bottom 40px
-- Before 박스: `#FAFAFA` 배경, border-radius 20px, padding 36×40
-- After 박스: `#F0F7F0` 배경, border-radius 20px, padding 36×40
-- 박스 라벨: 22px, weight 500, letter-spacing 2px, margin-bottom 18px
-  - Before 라벨: `#C44536`
-  - After 라벨: `#2D7A3E`
-- chip: 흰 배경 + `#E0E0E0` 테두리, padding 10×18, border-radius 8px, 26px, #555
-- chip-highlight (after 2번째): `#2D7A3E` 배경 흰 텍스트
-- 화살표: before `↔` #C44536 / after `→` #2D7A3E, 24px
-- note: 22px, before #999 / after #2D7A3E
+- Before 박스: `#FFF5F5` 배경, border-radius 20px, padding 36×44, flex: 1
+- After 박스: `#F0F7F0` 배경, border-radius 20px, padding 36×44, flex: 1
+- 박스 라벨: 22px, weight 500, letter-spacing 2px
+  - Before 라벨: `#C44536` / After 라벨: `#2D7A3E`
+- 항목: 세로 리스트, gap 14px
+  - 마커: `✗` (#C44536) / `✓` (#2D7A3E), 26px
+  - Before 텍스트: 30px, #555
+  - After 텍스트: 30px, #111, weight 500
+- note: 22px, before `#C44536 opacity 0.7` / after `#2D7A3E`
 
 **글자 수 제한**:
 - `before_items`: 각 10자 이하, 최대 4개
