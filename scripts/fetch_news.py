@@ -16,7 +16,13 @@ IT_KEYWORDS = [
 def fetch_top_stories(count=5):
     """HackerNews 상위 스토리 중 IT 관련 뉴스 count개 반환"""
     try:
-        ids = requests.get(f"{HN_API}/topstories.json", timeout=10).json()[:80]
+        resp = requests.get(f"{HN_API}/topstories.json", timeout=10)
+        resp.raise_for_status()
+        data = resp.json()
+        if not isinstance(data, list):
+            print(f"[fetch] HN 응답 형식 오류: {data}")
+            return []
+        ids = data[:80]
     except Exception as e:
         print(f"[fetch] HN top stories 요청 실패: {e}")
         return []
