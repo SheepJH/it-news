@@ -53,3 +53,11 @@ jobs:
         run: |
           sleep 30
           python scripts/notify_slack.py
+
+      - name: Slack 실패 알림
+        if: failure()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          GH_REPO:           ${{ secrets.GH_REPO }}
+          GITHUB_RUN_ID:     ${{ github.run_id }}
+        run: python scripts/notify_slack_error.py

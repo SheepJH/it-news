@@ -37,3 +37,16 @@ def send_daily_card(date_str: str, page_url: str, card_count: int = 5, thumbnail
         print(f"[slack] 전송 완료 → {page_url}")
     else:
         print(f"[slack] 전송 실패: {resp.status_code} {resp.text}")
+
+
+def send_error(date_str: str, step: str, run_url: str = ""):
+    webhook_url = os.environ.get("SLACK_WEBHOOK_URL", "")
+    if not webhook_url:
+        return
+
+    text = f":warning: *IT 카드뉴스 생성 실패 — {date_str}*\n실패 단계: `{step}`"
+    if run_url:
+        text += f"\n<{run_url}|Actions 로그 보기>"
+
+    payload = {"blocks": [{"type": "section", "text": {"type": "mrkdwn", "text": text}}]}
+    requests.post(webhook_url, json=payload)
