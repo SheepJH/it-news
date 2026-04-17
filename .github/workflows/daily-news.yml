@@ -32,11 +32,9 @@ jobs:
         working-directory: scripts
         env:
           ANTHROPIC_API_KEY:  ${{ secrets.ANTHROPIC_API_KEY }}
-          KAKAO_ACCESS_TOKEN: ${{ secrets.KAKAO_ACCESS_TOKEN }}
-          KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN }}
-          KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY }}
           GH_REPO:            ${{ secrets.GH_REPO }}
           GH_TOKEN:           ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK_URL:  ${{ secrets.SLACK_WEBHOOK_URL }}
         run: python main.py
 
       - name: GitHub에 커밋 & 푸시

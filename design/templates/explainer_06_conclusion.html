@@ -43,17 +43,6 @@
     color: #AAA; font-size: 30px; line-height: 1.6;
     white-space: pre-line;
   }
-  .footer {
-    border-top: 1px solid #333;
-    padding-top: 32px;
-  }
-  .footer .next {
-    color: white; font-size: 26px; font-weight: 500;
-    margin-bottom: 8px;
-  }
-  .footer .cta {
-    color: #FFE566; font-size: 22px;
-  }
 </style>
 </head>
 <body>
@@ -67,10 +56,6 @@
       <div class="headline">{% for part in headline_parts %}{% if part.highlight %}<span class="accent">{{ part.text }}</span>{% else %}{{ part.text }}{% endif %}{% if not loop.last %}<br/>{% endif %}{% endfor %}</div>
       <div class="divider"></div>
       <div class="body-text">{{ body_text }}</div>
-    </div>
-    <div class="footer">
-      <div class="next">{{ next_episode }}</div>
-      <div class="cta">저장 · 팔로우 @{{ handle }}</div>
     </div>
   </div>
 </body>

@@ -16,7 +16,7 @@
     background: #FFFFFF;
     border: 1px solid #E8E8E8;
     padding: 80px;
-    display: flex; flex-direction: column; justify-content: space-between;
+    display: flex; flex-direction: column; justify-content: flex-start; gap: 60px;
   }
   .header {
     display: flex; justify-content: space-between; align-items: center;
@@ -61,7 +61,6 @@
   }
   .note-before { color: #999; }
   .note-after { color: #2D7A3E; }
-  .footer { color: #999; font-size: 22px; }
 </style>
 </head>
 <body>
@@ -99,7 +98,6 @@
         <div class="box-note note-after">{{ after_note }}</div>
       </div>
     </div>
-    <div class="footer">@{{ handle }}</div>
   </div>
 </body>
 </html>

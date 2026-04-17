@@ -13,7 +13,7 @@ DOCS.mkdir(exist_ok=True)
 from fetch_news import fetch_top_stories
 from claude_processor import generate_explainer_json
 from renderer import render_card_set, generate_viewer_html, generate_index
-from kakao_notify import send_daily_card
+from slack_notify import send_daily_card
 
 
 def get_existing_dates():
@@ -38,12 +38,18 @@ def main():
         print("[main] JSON 생성 실패. 종료.")
         sys.exit(1)
 
-    # 3. PNG 6장 렌더링
+    # 3. PNG 렌더링 (커버에 날짜 주입)
+    if data["pages"] and data["pages"][0].get("template") == "explainer_01_cover.html":
+        data["pages"][0]["date"] = datetime.now().strftime("%Y.%m.%d")
     output_dir = DOCS / today
     png_paths = render_card_set(data, output_dir)
 
     # 4. 뷰어 HTML 생성
-    viewer_html = generate_viewer_html(today, png_paths)
+    viewer_html = generate_viewer_html(
+        today, png_paths,
+        source_url=stories[0]["url"],
+        keywords=data.get("keywords"),
+    )
     viewer_path = DOCS / f"{today}.html"
     viewer_path.write_text(viewer_html, encoding="utf-8")
     print(f"[main] 뷰어 저장: {viewer_path}")
@@ -56,13 +62,14 @@ def main():
     (DOCS / "index.html").write_text(index_html, encoding="utf-8")
     print("[main] 인덱스 갱신 완료")
 
-    # 6. 카카오톡 알림
+    # 6. 슬랙 알림
     github_repo = os.environ.get("GH_REPO", "")
     repo_name = github_repo.split("/")[-1] if "/" in github_repo else "it-news"
     github_user = github_repo.split("/")[0] if "/" in github_repo else ""
     page_url = f"https://{github_user}.github.io/{repo_name}/{today}.html"
 
-    send_daily_card(today, page_url, card_count=len(png_paths))
+    thumbnail_url = f"https://{github_user}.github.io/{repo_name}/{today}/card_01.png"
+    send_daily_card(today, page_url, card_count=len(png_paths), thumbnail_url=thumbnail_url)
 
     print(f"\n완료! → {page_url}\n")
 

@@ -27,29 +27,32 @@
   .page-num {
     color: #999; font-size: 22px;
   }
-  .label-top {
-    color: #999; font-size: 26px; margin-bottom: 28px;
-    letter-spacing: 2px; font-weight: 500;
-  }
   .headline {
-    color: #111; font-size: 70px; font-weight: 500;
-    line-height: 1.35; letter-spacing: -0.02em;
-    white-space: pre-line;
+    color: #111; font-size: 48px; font-weight: 500;
+    margin-bottom: 56px; letter-spacing: -0.02em;
   }
-  .highlight {
-    background: linear-gradient(transparent 60%, #FFE566 60%);
-    padding: 0 6px;
+  .faqs {
+    display: flex; flex-direction: column; gap: 36px;
   }
-  .divider {
-    width: 80px; height: 4px; background: #111;
-    margin: 50px 0;
+  .faq-item {
+    border-left: 4px solid #FFE566;
+    padding-left: 32px;
   }
-  .body-text {
-    color: #555; font-size: 34px; line-height: 1.6;
-    white-space: pre-line;
+  .faq-q {
+    display: flex; gap: 14px; align-items: baseline;
+    margin-bottom: 12px;
   }
-  .body-text strong {
-    font-weight: 500; color: #111;
+  .q-label {
+    color: #FFE566; font-size: 28px; font-weight: 500;
+    flex-shrink: 0;
+  }
+  .q-text {
+    color: #111; font-size: 32px; font-weight: 500;
+    line-height: 1.35;
+  }
+  .a-text {
+    color: #555; font-size: 28px; line-height: 1.5;
+    padding-left: 42px;
   }
 </style>
 </head>
@@ -60,11 +63,20 @@
       <div class="page-num">{{ "%02d" | format(page_current) }} / {{ "%02d" | format(page_total) }}</div>
     </div>
     <div>
-      <div class="label-top">{{ label_top }}</div>
-      <div class="headline">{{ headline_before_highlight }}<span class="highlight">{{ headline_highlight }}</span></div>
-      <div class="divider"></div>
-      <div class="body-text">{{ body_text | safe }}</div>
+      <div class="headline">{{ headline }}</div>
+      <div class="faqs">
+        {% for faq in faqs %}
+        <div class="faq-item">
+          <div class="faq-q">
+            <span class="q-label">Q.</span>
+            <span class="q-text">{{ faq.q }}</span>
+          </div>
+          <div class="a-text">{{ faq.a }}</div>
+        </div>
+        {% endfor %}
+      </div>
     </div>
+    <div></div>
   </div>
 </body>
 </html>

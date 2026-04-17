@@ -30,9 +30,9 @@
     letter-spacing: 2px;
     align-self: flex-start;
   }
-  .series-meta {
-    color: #999; font-size: 24px;
-    margin-top: 28px; letter-spacing: 1px;
+  .date {
+    color: #BBB; font-size: 22px;
+    margin-top: 10px;
   }
   .middle .q-label {
     color: #CCC; font-size: 30px; margin-bottom: 18px;
@@ -57,7 +57,7 @@
   <div class="card">
     <div class="top">
       <div class="tag">EXPLAINER</div>
-      <div class="series-meta">{{ series_meta }}</div>
+      {% if date %}<div class="date">{{ date }}</div>{% endif %}
     </div>
     <div class="middle">
       <div class="q-label">Q.</div>
@@ -65,7 +65,6 @@
       <div class="subtitle">{{ subtitle }}</div>
     </div>
     <div class="bottom">
-      <span>@{{ handle }}</span>
       <span class="swipe">SWIPE →</span>
     </div>
   </div>

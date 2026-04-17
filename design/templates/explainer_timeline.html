@@ -15,7 +15,7 @@
     width: 1080px; height: 1080px;
     background: #FFFFFF;
     border: 1px solid #E8E8E8;
-    padding: 80px;
+    padding: 90px;
     display: flex; flex-direction: column; justify-content: space-between;
   }
   .header {
@@ -29,30 +29,44 @@
   }
   .headline {
     color: #111; font-size: 48px; font-weight: 500;
-    margin-bottom: 46px; letter-spacing: -0.02em;
+    margin-bottom: 56px; letter-spacing: -0.02em;
   }
-  .items {
-    display: flex; flex-direction: column; gap: 20px;
+  .timeline {
+    display: flex; flex-direction: column; gap: 0;
   }
-  .item {
-    display: flex; justify-content: space-between; align-items: center;
-    background: #FAFAFA; border-radius: 16px;
-    padding: 30px 36px;
+  .event {
+    display: flex; gap: 40px; align-items: flex-start;
+    padding-bottom: 40px;
+    position: relative;
   }
-  .item-title {
+  .event:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 168px;
+    top: 36px;
+    bottom: 0;
+    width: 2px;
+    background: #E8E8E8;
+  }
+  .event-date {
+    min-width: 130px;
+    color: #999; font-size: 22px;
+    padding-top: 6px;
+    text-align: right;
+  }
+  .event-dot {
+    min-width: 16px; height: 16px;
+    background: #FFE566;
+    border-radius: 50%;
+    margin-top: 10px;
+    position: relative;
+    z-index: 1;
+  }
+  .event-text {
     color: #111; font-size: 32px; font-weight: 500;
-    margin-bottom: 6px;
+    line-height: 1.4;
+    padding-top: 2px;
   }
-  .item-desc {
-    color: #777; font-size: 24px;
-  }
-  .item-tag {
-    font-size: 22px; font-weight: 500;
-    padding: 8px 18px; border-radius: 8px;
-    letter-spacing: 1px;
-  }
-  .tag-LIVE { color: #2D7A3E; background: #F0F7F0; }
-  .tag-NEW { color: #BA7517; background: #FAEEDA; }
 </style>
 </head>
 <body>
@@ -63,18 +77,17 @@
     </div>
     <div>
       <div class="headline">{{ headline }}</div>
-      <div class="items">
-        {% for item in items %}
-        <div class="item">
-          <div>
-            <div class="item-title">{{ item.title }}</div>
-            <div class="item-desc">{{ item.desc }}</div>
-          </div>
-          <div class="item-tag tag-{{ item.tag }}">{{ item.tag }}</div>
+      <div class="timeline">
+        {% for ev in events %}
+        <div class="event">
+          <div class="event-date">{{ ev.date }}</div>
+          <div class="event-dot"></div>
+          <div class="event-text">{{ ev.event }}</div>
         </div>
         {% endfor %}
       </div>
     </div>
+    <div></div>
   </div>
 </body>
 </html>

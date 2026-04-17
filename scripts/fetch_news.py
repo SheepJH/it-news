@@ -1,71 +1,100 @@
+import json
 import requests
-import xml.etree.ElementTree as ET
+from datetime import datetime, timezone, timedelta
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from pathlib import Path
 
-# RSS 피드 소스
-RSS_FEEDS = [
-    "https://techcrunch.com/category/artificial-intelligence/feed/",
-    "https://github.blog/feed/",
-    "https://feeds.feedburner.com/TheHackersNews",
-    "https://techcrunch.com/category/startups/feed/",
-    "https://www.theverge.com/rss/index.xml",
-    "https://feeds.feedburner.com/TechCrunch",
-]
+ROOT = Path(__file__).parent.parent
+USED_URLS_FILE = ROOT / "docs" / "used_urls.json"
+
+HN_TOP_URL    = "https://hacker-news.firebaseio.com/v0/topstories.json"
+HN_ITEM_URL   = "https://hacker-news.firebaseio.com/v0/item/{}.json"
+
+# 상위 몇 개 스토리를 후보로 볼지
+HN_CANDIDATE_COUNT = 50
 
 IT_KEYWORDS = [
     "ai", "gpt", "llm", "claude", "openai", "google", "microsoft", "apple",
     "python", "javascript", "react", "rust", "golang", "linux", "docker",
     "cloud", "aws", "azure", "kubernetes", "api", "startup", "funding",
-    "security", "hack", "breach", "data", "model", "agent", "open source",
+    "security", "hack", "breach", "model", "agent", "open source",
     "github", "developer", "software", "hardware", "chip", "quantum",
-    "robotics", "autonomous", "blockchain", "crypto", "tool", "release",
+    "robotics", "autonomous", "blockchain", "crypto", "release",
 ]
 
 
-def _parse_feed(feed_url):
-    """RSS/Atom 피드 파싱 → [{title, url}] 반환"""
+def _load_used_urls() -> set:
+    if USED_URLS_FILE.exists():
+        return set(json.loads(USED_URLS_FILE.read_text()))
+    return set()
+
+
+def _save_used_url(url: str):
+    used = _load_used_urls()
+    used.add(url)
+    USED_URLS_FILE.parent.mkdir(exist_ok=True)
+    USED_URLS_FILE.write_text(json.dumps(list(used), ensure_ascii=False, indent=2))
+
+
+def _fetch_item(story_id: int):
     try:
-        resp = requests.get(feed_url, timeout=10, headers={"User-Agent": "Mozilla/5.0"})
-        resp.raise_for_status()
-        root = ET.fromstring(resp.content)
+        resp = requests.get(HN_ITEM_URL.format(story_id), timeout=5)
+        return resp.json()
+    except Exception:
+        return None
+
+
+def fetch_top_stories(count: int = 1) -> list:
+    """
+    HN 상위 스토리 → 점수순 정렬 → 24시간 이내 + 키워드 + 미사용 첫 번째 반환
+    """
+    used_urls = _load_used_urls()
+    cutoff = datetime.now(timezone.utc) - timedelta(hours=24)
+
+    # 상위 N개 ID 가져오기
+    try:
+        top_ids = requests.get(HN_TOP_URL, timeout=10).json()[:HN_CANDIDATE_COUNT]
     except Exception as e:
-        print(f"[fetch] RSS 파싱 실패 ({feed_url}): {e}")
+        print(f"[fetch] HN 상위 스토리 목록 실패: {e}")
         return []
 
-    items = []
-    # RSS 2.0
-    for item in root.findall(".//item"):
-        title = (item.findtext("title") or "").strip()
-        link  = (item.findtext("link")  or "").strip()
-        if title and link:
-            items.append({"title": title, "url": link})
-    # Atom
-    if not items:
-        for entry in root.findall(".//{http://www.w3.org/2005/Atom}entry"):
-            title = (entry.findtext("{http://www.w3.org/2005/Atom}title") or "").strip()
-            link_el = entry.find("{http://www.w3.org/2005/Atom}link")
-            link = (link_el.get("href") or "") if link_el is not None else ""
-            if title and link:
-                items.append({"title": title, "url": link})
-    return items
+    print(f"[fetch] HN 상위 {len(top_ids)}개 스토리 조회 중...")
 
+    # 병렬로 스토리 상세 조회
+    stories = []
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        futures = {executor.submit(_fetch_item, sid): sid for sid in top_ids}
+        for future in as_completed(futures):
+            item = future.result()
+            if item and item.get("type") == "story" and item.get("url"):
+                stories.append(item)
 
-def fetch_top_stories(count=1):
-    """RSS 피드에서 IT 키워드 포함 기사 중 첫 번째 반환"""
-    seen_urls = set()
+    # 점수 높은 순 정렬
+    stories.sort(key=lambda x: x.get("score", 0), reverse=True)
+    print(f"[fetch] 유효 스토리 {len(stories)}개 (점수순 정렬)")
 
-    for feed_url in RSS_FEEDS:
-        articles = _parse_feed(feed_url)
-        for a in articles:
-            url = a["url"]
-            title = a["title"]
-            if url in seen_urls:
-                continue
-            if not any(kw in title.lower() for kw in IT_KEYWORDS):
-                continue
-            seen_urls.add(url)
-            story = {"title": title, "url": url, "score": 0, "comments": 0, "hn_url": url}
-            print(f"[fetch] 선택: {title}")
-            return [story]
+    for item in stories:
+        url   = item["url"]
+        title = item["title"]
+        score = item.get("score", 0)
+        pub   = datetime.fromtimestamp(item["time"], tz=timezone.utc)
 
-    print("[fetch] 수집된 뉴스 없음")
+        # 24시간 초과 제외
+        if pub < cutoff:
+            continue
+
+        # 중복 제외
+        if url in used_urls:
+            print(f"[fetch] 중복 건너뜀: {title[:40]}")
+            continue
+
+        # 키워드 필터
+        if not any(kw in title.lower() for kw in IT_KEYWORDS):
+            continue
+
+        _save_used_url(url)
+        print(f"[fetch] 선택: {title} (점수 {score})")
+        return [{"title": title, "url": url, "score": score}]
+
+    print("[fetch] 조건에 맞는 기사 없음")
     return []

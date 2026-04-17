@@ -27,29 +27,32 @@
   .page-num {
     color: #999; font-size: 22px;
   }
-  .label-top {
-    color: #999; font-size: 26px; margin-bottom: 28px;
-    letter-spacing: 2px; font-weight: 500;
+  .quote-block {
+    flex: 1;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 40px 0;
   }
-  .headline {
-    color: #111; font-size: 70px; font-weight: 500;
-    line-height: 1.35; letter-spacing: -0.02em;
+  .quote-mark {
+    color: #FFE566; font-size: 120px; line-height: 0.6;
+    margin-bottom: 32px;
+    font-family: Georgia, serif;
+  }
+  .quote-text {
+    color: #111; font-size: 58px; font-weight: 500;
+    line-height: 1.4; letter-spacing: -0.02em;
     white-space: pre-line;
+    margin-bottom: 48px;
   }
-  .highlight {
-    background: linear-gradient(transparent 60%, #FFE566 60%);
-    padding: 0 6px;
+  .quote-divider {
+    width: 60px; height: 3px; background: #FFE566;
+    margin-bottom: 28px;
   }
-  .divider {
-    width: 80px; height: 4px; background: #111;
-    margin: 50px 0;
+  .quote-source {
+    color: #111; font-size: 28px; font-weight: 500;
+    margin-bottom: 12px;
   }
-  .body-text {
-    color: #555; font-size: 34px; line-height: 1.6;
-    white-space: pre-line;
-  }
-  .body-text strong {
-    font-weight: 500; color: #111;
+  .quote-context {
+    color: #999; font-size: 24px;
   }
 </style>
 </head>
@@ -59,12 +62,14 @@
       <div class="section-label">{{ section_label }}</div>
       <div class="page-num">{{ "%02d" | format(page_current) }} / {{ "%02d" | format(page_total) }}</div>
     </div>
-    <div>
-      <div class="label-top">{{ label_top }}</div>
-      <div class="headline">{{ headline_before_highlight }}<span class="highlight">{{ headline_highlight }}</span></div>
-      <div class="divider"></div>
-      <div class="body-text">{{ body_text | safe }}</div>
+    <div class="quote-block">
+      <div class="quote-mark">"</div>
+      <div class="quote-text">{{ quote }}</div>
+      <div class="quote-divider"></div>
+      <div class="quote-source">{{ source }}</div>
+      {% if context %}<div class="quote-context">{{ context }}</div>{% endif %}
     </div>
+    <div></div>
   </div>
 </body>
 </html>
