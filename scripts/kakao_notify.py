@@ -39,7 +39,7 @@ def send_daily_card(date_str, page_url, card_count=5):
     access_token  = os.environ.get("KAKAO_ACCESS_TOKEN", "")
     refresh_token = os.environ.get("KAKAO_REFRESH_TOKEN", "")
     rest_api_key  = os.environ.get("KAKAO_REST_API_KEY", "")
-    github_repo   = os.environ.get("GITHUB_REPO", "")
+    github_repo   = os.environ.get("GH_REPO", "")
 
     if not access_token and not refresh_token:
         print("[kakao] 토큰 없음, 알림 건너뜀")

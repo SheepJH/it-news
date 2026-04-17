@@ -80,7 +80,7 @@ def main():
     print("[main] 인덱스 페이지 갱신 완료")
 
     # 6. 카카오톡 알림
-    github_repo  = os.environ.get("GITHUB_REPO", "")
+    github_repo  = os.environ.get("GH_REPO", "")
     # GitHub Pages URL: https://<user>.github.io/<repo>/YYYY-MM-DD.html
     repo_name = github_repo.split("/")[-1] if "/" in github_repo else "it-news"
     github_user = github_repo.split("/")[0] if "/" in github_repo else ""
