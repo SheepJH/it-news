@@ -50,7 +50,7 @@ def render_card_set(data: dict, output_dir: Path) -> list:
     return png_paths
 
 
-def generate_viewer_html(date_str: str, png_paths: list, source_url: str = "", keywords: list = None) -> str:
+def generate_viewer_html(date_str: str, png_paths: list, source_url: str = "", keywords: list = None, og_image_url: str = "") -> str:
     """docs/YYYY-MM-DD.html 뷰어 — 가로 스와이프 캐러셀 + 키워드 섹션"""
     slides = "\n".join(
         f'      <div class="slide"><img src="{date_str}/card_{i:02d}.png" alt="card {i}"></div>'
@@ -83,6 +83,11 @@ def generate_viewer_html(date_str: str, png_paths: list, source_url: str = "", k
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>IT 카드뉴스 — {date_str}</title>
+<meta property="og:type" content="website">
+<meta property="og:title" content="IT 카드뉴스 — {date_str}">
+<meta property="og:image" content="{og_image_url or f'{date_str}/card_01.png'}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="{og_image_url or f'{date_str}/card_01.png'}">
 <style>
   * {{ margin: 0; padding: 0; box-sizing: border-box; }}
   body {{ background: #1a1a1a; font-family: sans-serif; overflow-y: auto; }}

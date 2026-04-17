@@ -44,10 +44,17 @@ def main():
     png_paths = render_card_set(data, output_dir)
 
     # 4. 뷰어 HTML 생성
+    github_repo = os.environ.get("GH_REPO", "")
+    repo_name = github_repo.split("/")[-1] if "/" in github_repo else "it-news"
+    github_user = github_repo.split("/")[0] if "/" in github_repo else ""
+    page_url = f"https://{github_user}.github.io/{repo_name}/{today}.html"
+    thumbnail_url = f"https://{github_user}.github.io/{repo_name}/{today}/card_01.png"
+
     viewer_html = generate_viewer_html(
         today, png_paths,
         source_url=stories[0]["url"],
         keywords=data.get("keywords"),
+        og_image_url=thumbnail_url,
     )
     viewer_path = DOCS / f"{today}.html"
     viewer_path.write_text(viewer_html, encoding="utf-8")
@@ -60,12 +67,6 @@ def main():
     index_html = generate_index(all_dates)
     (DOCS / "index.html").write_text(index_html, encoding="utf-8")
     print("[main] 인덱스 갱신 완료")
-
-    # 6. URL 출력 (슬랙 알림은 git push 후 워크플로우에서 별도 실행)
-    github_repo = os.environ.get("GH_REPO", "")
-    repo_name = github_repo.split("/")[-1] if "/" in github_repo else "it-news"
-    github_user = github_repo.split("/")[0] if "/" in github_repo else ""
-    page_url = f"https://{github_user}.github.io/{repo_name}/{today}.html"
 
     print(f"\n완료! → {page_url}\n")
     print(f"CARD_COUNT={len(png_paths)}")
