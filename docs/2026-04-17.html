@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IT 카드뉴스 — 2026년 04월 17일</title>
+  <style>
+:root {
+  --accent:       #7C3AED;
+  --accent-mid:   #6D28D9;
+  --accent-light: #EDE9FE;
+  --accent-xlight:#F5F3FF;
+  --text-1:       #111827;
+  --text-2:       #374151;
+  --text-3:       #6B7280;
+  --text-4:       #9CA3AF;
+  --bg:           #F0EEFF;
+  --card:         #FFFFFF;
+  --border:       #E5E7EB;
+  --radius:       20px;
+  --shadow:       0 4px 28px rgba(109,40,217,.10);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI',
+               'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
+  background: var(--bg);
+  color: var(--text-1);
+  min-height: 100vh;
+  padding-bottom: 60px;
+}
+
+/* ── 페이지 헤더 ── */
+.page-header {
+  text-align: center;
+  padding: 48px 20px 28px;
+}
+.site-label {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: var(--accent-light);
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 14px;
+}
+.page-date {
+  font-size: 36px;
+  font-weight: 900;
+  color: var(--text-1);
+  line-height: 1;
+  letter-spacing: -.02em;
+}
+.page-sub {
+  margin-top: 8px;
+  font-size: 14px;
+  color: var(--text-3);
+}
+
+/* ── 그리드 ── */
+.grid {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+@media (max-width: 660px) {
+  .grid { grid-template-columns: 1fr; }
+}
+.card-full { grid-column: 1 / -1; }
+
+/* ── 카드 공통 ── */
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.card-accent-bar {
+  height: 4px;
+  background: linear-gradient(90deg, var(--accent) 0%, #A78BFA 100%);
+}
+.card-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px 0;
+}
+.badge {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  color: var(--accent);
+  background: var(--accent-light);
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+.card-num {
+  font-size: 12px;
+  color: var(--text-4);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── 카드 본문 ── */
+.card-body {
+  padding: 16px 20px 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.card-title {
+  font-size: 21px;
+  font-weight: 800;
+  line-height: 1.35;
+  color: var(--text-1);
+  word-break: keep-all;
+}
+.card-subtitle {
+  font-size: 13px;
+  color: var(--accent);
+  font-weight: 600;
+  margin-top: -8px;
+}
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+}
+
+/* 요약 */
+.summary-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  color: var(--text-3);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.summary-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.summary-list li {
+  font-size: 14px;
+  color: var(--text-2);
+  line-height: 1.55;
+  padding-left: 18px;
+  position: relative;
+}
+.summary-list li::before {
+  content: '▸';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  font-size: 12px;
+  top: 2px;
+}
+
+/* 왜 중요한가 박스 */
+.insight-box {
+  background: var(--accent-light);
+  border-radius: 12px;
+  padding: 13px 15px;
+}
+.insight-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  color: var(--accent);
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 5px;
+}
+.insight-text {
+  font-size: 13px;
+  color: var(--text-1);
+  line-height: 1.6;
+  word-break: keep-all;
+}
+
+/* ── 오늘의 키워드 섹션 ── */
+.kw-section {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+.kw-section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.kw-section-title {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: .1em;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+.kw-section-line {
+  flex: 1;
+  height: 1px;
+  background: var(--accent-light);
+}
+.kw-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+@media (max-width: 660px) {
+  .kw-list { grid-template-columns: 1fr; }
+}
+.kw-item {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 16px 18px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.kw-term {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--accent);
+  line-height: 1;
+}
+.kw-full {
+  font-size: 11px;
+  color: var(--text-4);
+  font-weight: 500;
+}
+.kw-desc {
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.6;
+  word-break: keep-all;
+}
+
+/* 카드 푸터 */
+.card-footer {
+  border-top: 1px solid var(--border);
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+.source-link {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+  text-decoration: none;
+  transition: color .15s;
+}
+.source-link:hover { color: var(--accent-mid); }
+.source-meta {
+  font-size: 12px;
+  color: var(--text-4);
+}
+
+/* ── Versus 카드 ── */
+.vs-grid {
+  display: grid;
+  grid-template-columns: 1fr 28px 1fr;
+  gap: 8px;
+  align-items: start;
+}
+.vs-col {
+  background: var(--accent-xlight);
+  border-radius: 12px;
+  padding: 12px;
+}
+.vs-name {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-1);
+  text-align: center;
+  margin-bottom: 8px;
+  word-break: keep-all;
+}
+.vs-sep {
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--accent);
+  text-align: center;
+  padding-top: 14px;
+}
+.vs-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.vs-list li {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text-2);
+}
+.vs-spec {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-top: 6px;
+  text-align: center;
+}
+.verdict {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-mid) 100%);
+  border-radius: 12px;
+  padding: 12px 15px;
+  color: white;
+}
+.verdict-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  opacity: .75;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.verdict-text {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+/* ── Data 카드 ── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.stat-box {
+  background: var(--accent-xlight);
+  border-radius: 12px;
+  padding: 14px 10px;
+  text-align: center;
+}
+.stat-value {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--accent);
+  line-height: 1;
+}
+.stat-unit {
+  font-size: 11px;
+  color: var(--accent);
+  font-weight: 600;
+}
+.stat-label {
+  font-size: 11px;
+  color: var(--text-3);
+  margin-top: 5px;
+  line-height: 1.3;
+}
+
+/* ── Timeline 카드 ── */
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.tl-item {
+  display: grid;
+  grid-template-columns: 56px 1px 1fr;
+  gap: 0 12px;
+  position: relative;
+}
+.tl-date {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent);
+  text-align: right;
+  padding: 2px 0 16px;
+  line-height: 1.2;
+}
+.tl-line-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.tl-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+.tl-line {
+  flex: 1;
+  width: 2px;
+  background: var(--accent-light);
+  min-height: 14px;
+}
+.tl-event {
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.5;
+  padding-bottom: 16px;
+}
+.tl-event.current {
+  font-weight: 700;
+  color: var(--text-1);
+}
+.tl-item:last-child .tl-line { display: none; }
+
+/* ── Explainer 카드 ── */
+.one-liner {
+  background: linear-gradient(135deg, var(--accent) 0%, #A78BFA 100%);
+  border-radius: 12px;
+  padding: 16px;
+  color: white;
+  text-align: center;
+}
+.one-liner-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  opacity: .75;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.one-liner-text {
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+/* ── 내비게이션 ── */
+.nav-bar {
+  max-width: 1040px;
+  margin: 28px auto 0;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+}
+.nav-btn {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+  text-decoration: none;
+  background: var(--card);
+  border-radius: 10px;
+  padding: 9px 18px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  transition: background .15s;
+}
+.nav-btn:hover { background: var(--accent-light); }
+.nav-btn.disabled {
+  color: var(--text-4);
+  pointer-events: none;
+  box-shadow: none;
+}
+</style>
+</head>
+<body>
+
+  <header class="page-header">
+    <p class="site-label">IT 카드뉴스</p>
+    <h1 class="page-date">2026년 04월 17일 (금)</h1>
+    <p class="page-sub">오늘의 IT 핵심 뉴스 5선</p>
+  </header>
+
+  <div class="grid">
+    <article class="card"><div class="card-accent-bar"></div>
+    <div class="card-meta">
+      <span class="badge">AI/ML</span>
+      <span class="card-num">01 / 05</span>
+    </div>
+    <div class="card-body">
+      <h2 class="card-title">Claude Opus 4.7 출시</h2>
+      <p class="card-subtitle">Anthropic의 최신 플래그십 모델 공개</p>
+      <hr class="divider">
+      
+      <div>
+        <p class="summary-label">📌 핵심 요약</p>
+        <ul class="summary-list"><li>Anthropic이 Claude Opus 4.7을 공식 발표, 기존 Opus 4 대비 향상된 성능 제공</li><li>에이전틱 작업 및 복잡한 추론 능력이 크게 강화된 것으로 알려짐</li><li>HN 점수 1577로 커뮤니티의 높은 관심을 받으며 이번 주 최고 화제작</li></ul>
+      </div>
+      
+      <div class="insight-box">
+        <span class="insight-label">💡 왜 중요한가</span>
+        <p class="insight-text">현재 가장 강력한 상용 AI 모델 중 하나로, 코딩·분석·에이전트 파이프라인 구축에 활용하는 개발자에게 직접적인 영향을 미친다. 경쟁 모델 대비 성능 벤치마크를 확인하고 프로젝트 스택 업데이트 여부를 검토할 필요가 있다.</p>
+      </div>
+    </div>
+    
+    <div class="card-footer">
+      <a class="source-link" href="https://www.anthropic.com/news/claude-opus-4-7" target="_blank">원문 보기 →</a>
+      <span class="source-meta">⬆ 1577 &nbsp;💬 1120</span>
+    </div></article><article class="card"><div class="card-accent-bar"></div>
+    <div class="card-meta">
+      <span class="badge">AI/ML</span>
+      <span class="card-num">02 / 05</span>
+    </div>
+    <div class="card-body">
+      <h2 class="card-title">Qwen3.6-35B 오픈소스 공개</h2>
+      <p class="card-subtitle">에이전틱 코딩 특화 MoE 모델, 전면 무료 개방</p>
+      <hr class="divider">
+      
+      <div>
+        <p class="summary-label">📌 핵심 요약</p>
+        <ul class="summary-list"><li>Alibaba Qwen팀이 35B 파라미터(활성 3B) MoE 구조의 코딩 특화 모델을 오픈소스로 공개</li><li>에이전틱 코딩 벤치마크에서 최상위권 성능을 기록하며 상용 모델과 경쟁</li><li>로컬 실행 가능한 수준의 낮은 활성 파라미터(3B)로 일반 GPU에서도 구동 가능</li></ul>
+      </div>
+      
+      <div class="insight-box">
+        <span class="insight-label">💡 왜 중요한가</span>
+        <p class="insight-text">상용 API 비용 없이 고성능 코딩 에이전트를 로컬 또는 자체 인프라에서 운용할 수 있는 새로운 선택지가 생겼다. 특히 보안 정책상 외부 API 사용이 제한된 기업 환경의 개발자에게 실질적인 대안이 될 수 있다.</p>
+      </div>
+    </div>
+    
+    <div class="card-footer">
+      <a class="source-link" href="https://qwen.ai/blog?id=qwen3.6-35b-a3b" target="_blank">원문 보기 →</a>
+      <span class="source-meta">⬆ 973 &nbsp;💬 433</span>
+    </div></article><article class="card"><div class="card-accent-bar"></div>
+    <div class="card-meta">
+      <span class="badge">비교 분석</span>
+      <span class="card-num">03 / 05</span>
+    </div>
+    <div class="card-body">
+      <h2 class="card-title">로컬 Qwen이 Opus 4.7 이겼다</h2>
+      <hr class="divider">
+      <div class="vs-grid">
+        
+        <div class="vs-col">
+          <p class="vs-name">Qwen3.6-35B-A3B (로컬)</p>
+          <ul class="vs-list"><li>✅ 무료 로컬 실행</li><li>✅ 특정 창작 작업에서 우수한 결과</li><li>✅ 프라이버시 보장</li><li>❌ 로컬 하드웨어 필요</li><li>❌ 모든 태스크에서 우위는 아님</li></ul>
+          <p class="vs-spec">35B 파라미터 / 활성 3B MoE / 오픈소스 무료</p>
+        </div>
+        <div class="vs-sep">VS</div>
+        
+        <div class="vs-col">
+          <p class="vs-name">Claude Opus 4.7 (API)</p>
+          <ul class="vs-list"><li>✅ 최신 플래그십 성능</li><li>✅ 안정적인 클라우드 서비스</li><li>✅ 폭넓은 태스크 지원</li><li>❌ API 비용 발생</li><li>❌ 로컬 실행 불가</li><li>❌ 특정 창작 태스크에서 열세</li></ul>
+          <p class="vs-spec">Anthropic 상용 API / 유료</p>
+        </div>
+      </div>
+      <div class="verdict">
+        <p class="verdict-label">🏆 결론</p>
+        <p class="verdict-text">창작·비주얼 생성 등 특정 태스크는 로컬 오픈소스가 앞설 수 있어, 태스크별 모델 선택이 중요</p>
+      </div>
+    </div>
+    
+    <div class="card-footer">
+      <a class="source-link" href="https://simonwillison.net/2026/Apr/16/qwen-beats-opus/" target="_blank">원문 보기 →</a>
+      <span class="source-meta">⬆ 347 &nbsp;💬 75</span>
+    </div></article><article class="card"><div class="card-accent-bar"></div>
+    <div class="card-meta">
+      <span class="badge">💡 개념 설명</span>
+      <span class="card-num">04 / 05</span>
+    </div>
+    <div class="card-body">
+      <h2 class="card-title">Cloudflare AI 추론 플랫폼 공개</h2>
+      <hr class="divider">
+      
+      <div class="one-liner">
+        <p class="one-liner-label">한 줄 정리</p>
+        <p class="one-liner-text">에이전트 중심으로 설계된 엣지 AI 인퍼런스 레이어</p>
+      </div>
+      
+      <div>
+        <p class="summary-label">📌 핵심 요약</p>
+        <ul class="summary-list"><li>Cloudflare가 AI 에이전트 워크플로우에 최적화된 인퍼런스 레이어를 포함한 AI 플랫폼 발표</li><li>엣지 네트워크 기반으로 낮은 지연 시간과 글로벌 분산 AI 추론을 제공</li><li>Workers AI, AI Gateway 등 기존 제품군과 통합되어 풀스택 에이전트 개발 환경 제공</li></ul>
+      </div>
+      
+      <div class="insight-box">
+        <span class="insight-label">💡 왜 중요한가</span>
+        <p class="insight-text">Cloudflare의 글로벌 엣지 인프라 위에서 AI 에이전트를 직접 실행할 수 있게 되어, 별도 ML 인프라 구축 없이 저지연 에이전트 서비스를 빠르게 배포할 수 있다. 서버리스 AI 아키텍처를 고려하는 개발자에게 중요한 플랫폼 선택지가 추가된 것이다.</p>
+      </div>
+    </div>
+    
+    <div class="card-footer">
+      <a class="source-link" href="https://blog.cloudflare.com/ai-platform/" target="_blank">원문 보기 →</a>
+      <span class="source-meta">⬆ 256 &nbsp;💬 60</span>
+    </div></article><article class="card"><div class="card-accent-bar"></div>
+    <div class="card-meta">
+      <span class="badge">보안</span>
+      <span class="card-num">05 / 05</span>
+    </div>
+    <div class="card-body">
+      <h2 class="card-title">AI Codex로 삼성 TV 해킹 성공</h2>
+      <p class="card-subtitle">OpenAI Codex 에이전트가 실제 기기 취약점 발굴·익스플로잇</p>
+      <hr class="divider">
+      
+      <div>
+        <p class="summary-label">📌 핵심 요약</p>
+        <ul class="summary-list"><li>보안 연구자가 OpenAI Codex를 활용해 삼성 스마트 TV의 취약점을 자동으로 발견하고 익스플로잇에 성공</li><li>AI 에이전트가 코드 분석부터 익스플로잇 작성까지 해킹 과정 전반을 자동화할 수 있음을 실증</li><li>AI 기반 자동 취약점 탐색 및 공격의 현실화 가능성에 대한 보안 커뮤니티의 우려가 커지고 있음</li></ul>
+      </div>
+      
+      <div class="insight-box">
+        <span class="insight-label">💡 왜 중요한가</span>
+        <p class="insight-text">AI 코딩 에이전트가 단순 개발 보조를 넘어 실제 사이버 공격 자동화에 활용될 수 있음을 보여주는 중요한 사례로, IoT·임베디드 기기 보안의 취약성이 AI로 더 빠르게 발굴될 수 있다. 보안 담당자와 개발자 모두 AI 기반 공격 벡터에 대한 방어 전략을 재검토해야 할 시점이다.</p>
+      </div>
+    </div>
+    
+    <div class="card-footer">
+      <a class="source-link" href="https://blog.calif.io/p/codex-hacked-a-samsung-tv" target="_blank">원문 보기 →</a>
+      <span class="source-meta">⬆ 225 &nbsp;💬 124</span>
+    </div></article>
+  </div>
+
+  
+  <section class="kw-section">
+    <div class="kw-section-header">
+      <span class="kw-section-title">오늘의 키워드</span>
+      <div class="kw-section-line"></div>
+    </div>
+    <div class="kw-list">
+        <div class="kw-item">
+          <p class="kw-term">Claude Opus 4.7</p>
+          
+          <p class="kw-desc">Anthropic이 개발한 최신 대형 언어 모델로, 고난이도 추론과 코딩 작업에 특화되어 있습니다. AI 모델 성능 경쟁이 치열해지는 가운데 오픈소스 모델과의 비교 벤치마크에서 자주 언급됩니다.</p>
+        </div>
+        <div class="kw-item">
+          <p class="kw-term">Qwen3</p>
+          
+          <p class="kw-desc">알리바바가 공개한 오픈소스 대형 언어 모델 시리즈로, 최신 버전은 MoE 구조를 채택해 적은 연산량으로 높은 성능을 냅니다. 로컬 환경(노트북 등)에서도 실행 가능한 수준으로 경량화되어 주목받고 있습니다.</p>
+        </div>
+        <div class="kw-item">
+          <p class="kw-term">MoE</p>
+          <p class="kw-full">Mixture of Experts</p>
+          <p class="kw-desc">전체 모델 파라미터 중 일부 전문가 네트워크만 선택적으로 활성화해 연산 효율을 높이는 AI 아키텍처입니다. Qwen3.6-35B-A3B처럼 총 35B 파라미터 중 실제 사용은 3B 수준으로 줄여 로컬 실행을 가능하게 합니다.</p>
+        </div>
+        <div class="kw-item">
+          <p class="kw-term">AI Agent</p>
+          
+          <p class="kw-desc">단순 질의응답을 넘어 목표를 스스로 분해하고 도구를 호출하며 작업을 자율적으로 수행하는 AI 시스템입니다. Cloudflare의 인퍼런스 레이어나 Codex 같은 서비스가 에이전트 실행 인프라로 부상하면서 핵심 키워드가 되었습니다.</p>
+        </div>
+        <div class="kw-item">
+          <p class="kw-term">Inference Layer</p>
+          
+          <p class="kw-desc">학습된 AI 모델이 실제 입력을 받아 결과를 추론(생성)하는 실행 단계를 처리하는 인프라 계층입니다. Cloudflare처럼 엣지 네트워크 기반의 인퍼런스 레이어가 등장하면서 AI 응답 속도와 비용 최적화가 가능해졌습니다.</p>
+        </div>
+        <div class="kw-item">
+          <p class="kw-term">Codex</p>
+          
+          <p class="kw-desc">OpenAI가 개발한 코드 생성 특화 AI로, 자연어 명령을 실제 코드나 시스템 동작으로 변환합니다. 이번 뉴스에서는 삼성 TV를 해킹하는 수준의 자율적 취약점 탐색에 활용되어 AI 보안 위협 논의를 촉발했습니다.</p>
+        </div></div>
+  </section>
+
+  <nav class="nav-bar">
+    <span class="nav-btn disabled">← 이전</span>
+    <span class="nav-btn disabled">다음 →</span>
+  </nav>
+
+</body>
+</html>
