@@ -279,11 +279,16 @@ explainer_06_conclusion.html:
   "genre": "explainer",
   "keywords": [
     {"term": "용어1", "definition": "한 줄 설명 (30자 이하)"},
-    {"term": "용어2", "definition": "한 줄 설명 (30자 이하)"},
-    {"term": "용어3", "definition": "한 줄 설명 (30자 이하)"}
+    ...
   ],
   "pages": [ ... ]
-}"""
+}
+
+keywords 작성 규칙:
+- 기사와 카드에 등장하는 모든 IT/기술 용어를 추출 (SMTP, DNS, API, 제품명 등 포함)
+- 독자가 모를 수 있는 용어는 빠짐없이 포함
+- 최소 5개, 최대 10개
+- definition: 30자 이하, 한국어로 쉽게 설명"""
 
 
 def generate_explainer_json(story: dict) -> dict:
