@@ -16,54 +16,41 @@
     background: #FFFFFF;
     border: 1px solid #E8E8E8;
     padding: 80px;
-    display: flex; flex-direction: column; gap: 48px;
+    display: flex; flex-direction: column; gap: 56px;
   }
   .header {
     display: flex; justify-content: space-between; align-items: center;
   }
-  .section-label {
-    color: #999; font-size: 24px; letter-spacing: 2px; font-weight: 500;
-  }
-  .page-num {
-    color: #999; font-size: 22px;
-  }
+  .section-label { color: #999; font-size: 24px; letter-spacing: 2px; font-weight: 500; }
+  .page-num      { color: #999; font-size: 22px; }
   .headline {
-    color: #111; font-size: 46px; font-weight: 500;
-    letter-spacing: -0.02em;
+    color: #111; font-size: 46px; font-weight: 500; letter-spacing: -0.02em;
   }
-  .boxes {
-    display: flex; flex-direction: column; gap: 20px; flex: 1;
+  .columns {
+    display: flex; gap: 24px;
   }
-  .box {
-    border-radius: 20px; padding: 36px 44px;
-    flex: 1; display: flex; flex-direction: column; gap: 18px;
+  .col {
+    flex: 1; border-radius: 20px; padding: 40px 44px;
+    display: flex; flex-direction: column; gap: 24px;
   }
-  .box-before { background: #FFF5F5; }
-  .box-after  { background: #F0F7F0; }
-  .box-label {
+  .col-before { background: #FFF5F5; }
+  .col-after  { background: #F0F7F0; }
+  .col-label {
     font-size: 22px; font-weight: 500; letter-spacing: 2px;
   }
   .label-before { color: #C44536; }
   .label-after  { color: #2D7A3E; }
-  .items {
-    display: flex; flex-direction: column; gap: 14px;
-  }
-  .item {
-    display: flex; align-items: center; gap: 20px;
-  }
-  .item-marker {
-    font-size: 26px; font-weight: 500; flex-shrink: 0; line-height: 1;
+  .items { display: flex; flex-direction: column; gap: 20px; }
+  .item  { display: flex; align-items: flex-start; gap: 18px; }
+  .marker {
+    font-size: 28px; font-weight: 500; flex-shrink: 0; line-height: 1.3;
   }
   .marker-before { color: #C44536; }
   .marker-after  { color: #2D7A3E; }
-  .item-text {
-    font-size: 30px; line-height: 1.4;
-  }
-  .before .item-text { color: #555; }
-  .after  .item-text { color: #111; font-weight: 500; }
-  .box-note {
-    font-size: 22px; padding-top: 4px;
-  }
+  .item-text { font-size: 30px; line-height: 1.45; }
+  .col-before .item-text { color: #666; }
+  .col-after  .item-text { color: #111; font-weight: 500; }
+  .col-note { font-size: 22px; margin-top: 4px; }
   .note-before { color: #C44536; opacity: 0.7; }
   .note-after  { color: #2D7A3E; }
 </style>
@@ -75,30 +62,30 @@
       <div class="page-num">{{ "%02d" | format(page_current) }} / {{ "%02d" | format(page_total) }}</div>
     </div>
     <div class="headline">{{ headline }}</div>
-    <div class="boxes">
-      <div class="box box-before">
-        <div class="box-label label-before">{{ before_label }}</div>
-        <div class="items before">
+    <div class="columns">
+      <div class="col col-before">
+        <div class="col-label label-before">{{ before_label }}</div>
+        <div class="items">
           {% for item in before_items %}
           <div class="item">
-            <span class="item-marker marker-before">✗</span>
+            <span class="marker marker-before">✗</span>
             <span class="item-text">{{ item }}</span>
           </div>
           {% endfor %}
         </div>
-        <div class="box-note note-before">{{ before_note }}</div>
+        <div class="col-note note-before">{{ before_note }}</div>
       </div>
-      <div class="box box-after">
-        <div class="box-label label-after">{{ after_label }}</div>
-        <div class="items after">
+      <div class="col col-after">
+        <div class="col-label label-after">{{ after_label }}</div>
+        <div class="items">
           {% for item in after_chain %}
           <div class="item">
-            <span class="item-marker marker-after">✓</span>
+            <span class="marker marker-after">✓</span>
             <span class="item-text">{{ item }}</span>
           </div>
           {% endfor %}
         </div>
-        <div class="box-note note-after">{{ after_note }}</div>
+        <div class="col-note note-after">{{ after_note }}</div>
       </div>
     </div>
   </div>
