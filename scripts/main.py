@@ -25,6 +25,11 @@ def main():
     print(f"  IT 카드뉴스 생성 시작 — {today}")
     print(f"{'='*50}\n")
 
+    # 0. 오늘 카드가 이미 있으면 스킵 (백업 cron 중복 실행 방지)
+    if (DOCS / today / "card_01.png").exists():
+        print("[main] 오늘 카드뉴스가 이미 생성됨. 스킵.")
+        sys.exit(0)
+
     # 1. 뉴스 수집 (1개)
     stories = fetch_top_stories(count=1)
     if not stories:

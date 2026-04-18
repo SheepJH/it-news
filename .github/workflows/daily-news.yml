@@ -2,7 +2,9 @@ name: Daily IT 카드뉴스
 
 on:
   schedule:
-    - cron: '0 0 * * *'   # 매일 KST 09:00 (UTC 00:00)
+    - cron: '0 0 * * *'   # KST 09:00 (UTC 00:00)
+    - cron: '0 1 * * *'   # KST 10:00 — 백업
+    - cron: '0 2 * * *'   # KST 11:00 — 백업
   workflow_dispatch:        # 수동 실행 버튼
 
 permissions:
