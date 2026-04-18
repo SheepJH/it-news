@@ -8,13 +8,15 @@ def send_daily_card(date_str: str, page_url: str, card_count: int = 5, thumbnail
         print("[slack] SLACK_WEBHOOK_URL 없음, 건너뜀")
         return
 
+    # URL을 텍스트에 포함 → Slack이 OG 태그로 자동 미리보기 생성
     payload = {
+        "unfurl_links": True,
         "blocks": [
             {
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": f"*오늘의 IT 카드뉴스 — {date_str}*\n카드 {card_count}장 준비됐습니다.",
+                    "text": f"*오늘의 IT 카드뉴스 — {date_str}*\n카드 {card_count}장 준비됐습니다.\n{page_url}",
                 },
                 "accessory": {
                     "type": "button",
@@ -24,13 +26,6 @@ def send_daily_card(date_str: str, page_url: str, card_count: int = 5, thumbnail
             },
         ]
     }
-
-    if thumbnail_url:
-        payload["blocks"].append({
-            "type": "image",
-            "image_url": thumbnail_url,
-            "alt_text": f"IT 카드뉴스 {date_str}",
-        })
 
     resp = requests.post(webhook_url, json=payload)
     if resp.status_code == 200:
