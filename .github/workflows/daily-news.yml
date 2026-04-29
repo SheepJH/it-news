@@ -1,11 +1,7 @@
 name: Daily IT 카드뉴스
 
 on:
-  schedule:
-    - cron: '0 0 * * *'    # KST 09:00 (UTC 00:00)
-    - cron: '30 0 * * *'   # KST 09:30 — 백업
-    - cron: '0 1 * * *'    # KST 10:00 — 백업
-  workflow_dispatch:        # 수동 실행 버튼
+  workflow_dispatch:        # 수동 실행만 가능 (자동 스케줄 비활성화)
 
 permissions:
   contents: write   # docs/ 푸시용
